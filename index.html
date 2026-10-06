@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="เครื่องมือช่วยเตรียมข้อมูลคำร้องผู้บริโภคก่อนยื่นเรื่องจริง">
+  <title>ผู้ช่วยเตรียมคำร้อง</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="grid-background"></div>
+<div id="toast" class="toast"></div>
+
+<div id="homePage" class="page active-page">
+  <header class="top-nav">
+    <div class="brand">ผู้ช่วยเตรียมคำร้อง</div>
+    <nav>
+      <a href="#how">วิธีใช้งาน</a>
+      <a href="#faq">คำถามที่พบบ่อย</a>
+      <a href="#privacy">ความเป็นส่วนตัว</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-shade"></div>
+    <div class="system-top">เครื่องมือช่วยผู้บริโภค • พร้อมใช้งาน</div>
+
+    <div class="hero-card">
+      <div class="version">ระบบช่วยเตรียมข้อมูล</div>
+      <h1>ผู้ช่วย <span>เตรียมคำร้อง</span></h1>
+      <h2>เตรียมข้อมูลให้ครบ ก่อนยื่นเรื่องร้องเรียน</h2>
+      <p class="hero-text">จัดข้อมูลปัญหา • ตรวจหลักฐาน • ตรวจความพร้อม • สรุปข้อมูล</p>
+
+      <div class="ready"><span></span>ระบบพร้อมใช้งาน</div>
+
+      <button class="primary-button" onclick="startComplaint()">เริ่มเตรียมคำร้อง</button>
+      <button id="continueButton" class="secondary-button" onclick="continueDraft()">เปิดแบบร่างล่าสุด</button>
+
+      <p class="hero-note">
+        เว็บไซต์นี้ไม่ใช่เว็บไซต์ของสำนักงานคณะกรรมการคุ้มครองผู้บริโภค (สคบ.)
+        และไม่ได้ส่งคำร้องให้หน่วยงานใดโดยอัตโนมัติ
+      </p>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <div class="section-label">ความสามารถ</div>
+    <h2 class="section-heading">ช่วยเตรียมคำร้องได้อย่างไร</h2>
+
+    <div class="feature-grid">
+      <article class="feature-card">
+        <div class="feature-number">01</div>
+        <h3>จัดข้อมูลเป็นขั้นตอน</h3>
+        <p>ช่วยรวบรวมเหตุการณ์ ความเสียหาย การชำระเงิน และความต้องการของผู้ร้อง ให้อยู่ในรูปแบบที่ตรวจสอบง่าย</p>
+      </article>
+
+      <article class="feature-card">
+        <div class="feature-number">02</div>
+        <h3>ที่อยู่อัตโนมัติ</h3>
+        <p>เลือกจังหวัด อำเภอ และตำบล จากรายการ แล้วระบบช่วยแสดงรหัสไปรษณีย์โดยอัตโนมัติ</p>
+      </article>
+
+      <article class="feature-card">
+        <div class="feature-number">03</div>
+        <h3>ตรวจความพร้อม</h3>
+        <p>ระบบคำนวณคะแนนความพร้อม และบอกว่าข้อมูลส่วนไหนที่ควรเติมก่อนนำไปยื่นจริง</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="how" class="content-section">
+    <div class="section-label">วิธีใช้งาน</div>
+    <h2 class="section-heading">4 ขั้นตอน</h2>
+
+    <div class="process-list">
+      <div class="process-card"><strong>01</strong><div><h3>เล่าปัญหา</h3><p>ระบุเหตุการณ์ วันที่ ความเสียหาย และสิ่งที่ต้องการให้แก้ไข</p></div></div>
+      <div class="process-card"><strong>02</strong><div><h3>ระบุผู้ถูกร้องเรียน</h3><p>ใส่ชื่อร้าน บริษัท หน่วยงาน ที่อยู่ และช่องทางการติดต่อ</p></div></div>
+      <div class="process-card"><strong>03</strong><div><h3>เตรียมหลักฐาน</h3><p>ตรวจไฟล์ใบเสร็จ ภาพถ่าย เอกสาร และหลักฐานอื่น ๆ</p></div></div>
+      <div class="process-card"><strong>04</strong><div><h3>ตรวจความพร้อม</h3><p>ดูคะแนนความพร้อม ตรวจข้อมูลที่ขาด และคัดลอกไปใช้ยื่นเรื่องจริง</p></div></div>
+    </div>
+  </section>
+
+  <section id="faq" class="content-section">
+    <div class="section-label">คำถามที่พบบ่อย</div>
+    <h2 class="section-heading">ข้อมูลสำคัญก่อนใช้งาน</h2>
+
+    <div class="faq">
+      <details>
+        <summary>เว็บไซต์นี้ส่งคำร้องให้ สคบ. เลยหรือไม่?</summary>
+        <p>ไม่ เว็บไซต์นี้ช่วยเตรียมข้อมูลเท่านั้น ผู้ใช้ต้องนำข้อมูลไปยื่นผ่านช่องทางของหน่วยงานที่เกี่ยวข้องด้วยตนเอง</p>
+      </details>
+
+      <details>
+        <summary>ข้อมูลที่กรอกถูกส่งไปที่ไหน?</summary>
+        <p>เวอร์ชันนี้ไม่มีระบบส่งข้อมูลคำร้องไปยังเซิร์ฟเวอร์ของเรา แบบร่างข้อความถูกเก็บไว้ในเบราว์เซอร์ของอุปกรณ์ที่ใช้งาน</p>
+      </details>
+
+      <details>
+        <summary>ไฟล์หลักฐานถูกอัปโหลดหรือไม่?</summary>
+        <p>ไม่ ระบบใช้ไฟล์เพื่อช่วยตรวจชื่อ ประเภท และขนาดเท่านั้น หากรีเฟรชหน้าเว็บจะต้องเลือกไฟล์อีกครั้ง</p>
+      </details>
+
+      <details>
+        <summary>ข้อความที่ระบบเรียบเรียงถือเป็นคำแนะนำทางกฎหมายหรือไม่?</summary>
+        <p>ไม่ เป็นเพียงตัวช่วยจัดข้อความ ผู้ใช้ควรตรวจสอบข้อเท็จจริงและเนื้อหาก่อนนำไปใช้</p>
+      </details>
+    </div>
+  </section>
+
+  <section id="privacy" class="content-section privacy-section">
+    <div class="section-label">ความเป็นส่วนตัว</div>
+    <h2 class="section-heading">ข้อมูลของคุณอยู่ที่ไหน</h2>
+    <p>แบบร่างจะถูกเก็บในพื้นที่จัดเก็บของเบราว์เซอร์บนอุปกรณ์ที่ใช้งาน ไม่ควรใช้เครื่องสาธารณะหรือเครื่องที่มีผู้อื่นใช้งานร่วมกันในการกรอกข้อมูลส่วนบุคคล</p>
+    <p>คุณสามารถกด <strong>“ล้างข้อมูลทั้งหมด”</strong> ภายในระบบเพื่อลบแบบร่างจากเบราว์เซอร์ได้</p>
+  </section>
+
+  <footer>
+    <strong>ผู้ช่วยเตรียมคำร้องผู้บริโภค</strong><br>
+    เครื่องมืออิสระ • ไม่ใช่เว็บไซต์ของ สคบ.<br>
+    <span>กรุณาตรวจสอบข้อมูลก่อนนำไปใช้ยื่นเรื่องจริง</span>
+  </footer>
+</div>
+
+<div id="formPage" class="page">
+  <main class="app">
+    <div class="app-top">
+      <button class="home-button" onclick="goHome()">← หน้าแรก</button>
+      <div id="saveStatus" class="save-status">บันทึกอัตโนมัติ: เปิด</div>
+    </div>
+
+    <div class="system-message">
+      <span></span>ระบบพร้อมใช้งาน
+      <small>แบบร่างข้อความถูกเก็บในเบราว์เซอร์เครื่องนี้</small>
+    </div>
+
+    <div class="form-header">
+      <div>ระบบเตรียมข้อมูลคำร้อง</div>
+      <h1>เตรียมข้อมูลคำร้อง</h1>
+    </div>
+
+    <div class="progress">
+      <div class="progress-item active" id="progress1"><div class="progress-circle">01</div><span>ปัญหา</span></div>
+      <div class="progress-line"></div>
+      <div class="progress-item" id="progress2"><div class="progress-circle">02</div><span>ผู้ถูกร้อง</span></div>
+      <div class="progress-line"></div>
+      <div class="progress-item" id="progress3"><div class="progress-circle">03</div><span>หลักฐาน</span></div>
+      <div class="progress-line"></div>
+      <div class="progress-item" id="progress4"><div class="progress-circle">04</div><span>ตรวจสอบ</span></div>
+    </div>
+
+    <section id="step1" class="step active">
+      <div class="step-label">ขั้นตอนที่ 01</div>
+      <h2>ข้อมูลเรื่องร้องเรียน</h2>
+
+      <label for="name">ชื่อผู้ร้องเรียน *</label>
+      <input id="name" type="text" placeholder="ชื่อ-นามสกุล">
+
+      <label for="category">ประเภทปัญหา *</label>
+      <select id="category">
+        <option value="">-- เลือกประเภทปัญหา --</option>
+        <option value="สินค้าเสียหาย">สินค้าเสียหาย</option>
+        <option value="ปัญหาการขนส่ง">ปัญหาการขนส่ง</option>
+        <option value="ร้านค้าออนไลน์">ร้านค้าออนไลน์</option>
+        <option value="บริการไม่เป็นธรรม">บริการไม่เป็นธรรม</option>
+        <option value="โฆษณาไม่ตรงความจริง">โฆษณาไม่ตรงความจริง</option>
+        <option value="ไม่ได้รับสินค้า">ไม่ได้รับสินค้า</option>
+        <option value="ถูกเรียกเก็บเงินผิด">ถูกเรียกเก็บเงินผิด</option>
+        <option value="อื่น ๆ">อื่น ๆ</option>
+      </select>
+
+      <label for="incidentDate">วันที่เกิดเหตุ</label>
+      <input id="incidentDate" type="date">
+
+      <label for="problem">รายละเอียดเรื่องร้องเรียน *</label>
+      <textarea id="problem" placeholder="เล่าเหตุการณ์ว่าเกิดอะไรขึ้น ตั้งแต่เริ่มจนถึงปัจจุบัน..."></textarea>
+
+      <button class="helper-button" onclick="improveComplaint()">✦ ช่วยเรียบเรียงข้อความ</button>
+      <div class="small-note">ระบบช่วยจัดรูปแบบข้อความเท่านั้น กรุณาตรวจสอบข้อเท็จจริงทุกครั้ง</div>
+
+      <label for="damage">มูลค่าความเสียหาย</label>
+      <div class="money-field">
+        <input id="damage" type="number" min="0" placeholder="เช่น 25000">
+        <span>บาท</span>
+      </div>
+
+      <label>การชำระเงิน</label>
+      <div class="option-grid">
+        <label><input type="checkbox" name="payment" value="เงินสด">เงินสด</label>
+        <label><input type="checkbox" name="payment" value="โอนผ่านธนาคาร">โอนผ่านธนาคาร</label>
+        <label><input type="checkbox" name="payment" value="บัตรเครดิต/เดบิต">บัตรเครดิต / เดบิต</label>
+        <label><input type="checkbox" name="payment" value="กระเป๋าเงินอิเล็กทรอนิกส์">กระเป๋าเงินอิเล็กทรอนิกส์</label>
+        <label><input type="checkbox" name="payment" value="เก็บเงินปลายทาง">เก็บเงินปลายทาง</label>
+        <label><input type="checkbox" name="payment" value="อื่น ๆ">อื่น ๆ</label>
+      </div>
+
+      <label>ความประสงค์</label>
+      <div class="option-grid">
+        <label><input type="checkbox" name="request" value="เรียกร้องค่าเสียหาย">เรียกร้องค่าเสียหาย</label>
+        <label><input type="checkbox" name="request" value="ขอเงินคืน">ขอเงินคืน</label>
+        <label><input type="checkbox" name="request" value="ขอเปลี่ยนสินค้า">ขอเปลี่ยนสินค้า</label>
+        <label><input type="checkbox" name="request" value="ตรวจสอบผู้ประกอบการ">ตรวจสอบผู้ประกอบการ</label>
+        <label><input type="checkbox" name="request" value="ตรวจสอบการโฆษณา">ตรวจสอบการโฆษณา</label>
+        <label><input type="checkbox" name="request" value="ขอให้ช่วยไกล่เกลี่ย">ขอให้ช่วยไกล่เกลี่ย</label>
+      </div>
+
+      <label for="requestDetail">รายละเอียดความประสงค์เพิ่มเติม</label>
+      <textarea id="requestDetail" placeholder="เช่น ต้องการคืนเงินเต็มจำนวน 25,000 บาท"></textarea>
+
+      <div class="navigation right">
+        <button class="next-button" onclick="nextStep(1)">ถัดไป →</button>
+      </div>
+    </section>
+
+    <section id="step2" class="step">
+      <div class="step-label">ขั้นตอนที่ 02</div>
+      <h2>ข้อมูลผู้ถูกร้องเรียน</h2>
+
+      <label for="company">ชื่อบริษัท / ร้านค้า / หน่วยงาน *</label>
+      <input id="company" type="text" placeholder="ชื่อบริษัท ร้านค้า หรือหน่วยงาน">
+
+      <label for="companyDetail">รายละเอียดเพิ่มเติม</label>
+      <textarea id="companyDetail" placeholder="ชื่อพนักงาน แผนก เลขที่คำสั่งซื้อ ฯลฯ"></textarea>
+
+      <label for="address">บ้านเลขที่ / อาคาร / ซอย / ถนน</label>
+      <input id="address" type="text" placeholder="เช่น 123 ถนนตัวอย่าง">
+
+      <div class="address-grid">
+        <div>
+          <label for="province">จังหวัด *</label>
+          <select id="province" onchange="provinceChanged()" disabled>
+            <option value="">กำลังโหลดข้อมูล...</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="district">อำเภอ / เขต *</label>
+          <select id="district" onchange="districtChanged()" disabled>
+            <option value="">กรุณาเลือกจังหวัดก่อน</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="subDistrict">ตำบล / แขวง *</label>
+          <select id="subDistrict" onchange="subDistrictChanged()" disabled>
+            <option value="">กรุณาเลือกอำเภอก่อน</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="postcode">รหัสไปรษณีย์</label>
+          <input id="postcode" type="text" placeholder="อัตโนมัติ" readonly>
+        </div>
+      </div>
+
+      <div id="addressStatus" class="address-status">เลือกจังหวัด → อำเภอ → ตำบล</div>
+
+      <label for="companyPhone">เบอร์โทรศัพท์</label>
+      <input id="companyPhone" type="tel" placeholder="ถ้ามี">
+
+      <label for="companyChannel">เว็บไซต์ / Facebook / LINE / ช่องทางออนไลน์</label>
+      <input id="companyChannel" type="text" placeholder="ระบุช่องทางติดต่อของผู้ประกอบการ">
+
+      <label>สถานที่ซื้อหรือใช้บริการ</label>
+      <div class="option-grid">
+        <label><input type="checkbox" name="place" value="หน้าร้าน">หน้าร้าน</label>
+        <label><input type="checkbox" name="place" value="เว็บไซต์">เว็บไซต์</label>
+        <label><input type="checkbox" name="place" value="แอปพลิเคชัน">แอปพลิเคชัน</label>
+        <label><input type="checkbox" name="place" value="ตลาดซื้อขายออนไลน์">ตลาดซื้อขายออนไลน์</label>
+        <label><input type="checkbox" name="place" value="สื่อสังคมออนไลน์">สื่อสังคมออนไลน์</label>
+        <label><input type="checkbox" name="place" value="โทรศัพท์ / Call Center">โทรศัพท์ / Call Center</label>
+      </div>
+
+      <div class="navigation">
+        <button class="back-button" onclick="previousStep(2)">← ย้อนกลับ</button>
+        <button class="next-button" onclick="nextStep(2)">ถัดไป →</button>
+      </div>
+    </section>
+
+    <section id="step3" class="step">
+      <div class="step-label">ขั้นตอนที่ 03</div>
+      <h2>เตรียมหลักฐาน</h2>
+
+      <div class="file-info">
+        <strong>ไฟล์ที่รองรับ</strong><br>
+        PDF, JPG, JPEG, PNG, DOC และ DOCX<br>
+        ขนาดไม่เกิน 5 MB ต่อไฟล์
+      </div>
+
+      <div id="uploadList"></div>
+
+      <div class="warning-box">
+        <strong>หมายเหตุ</strong><br>
+        ไฟล์ที่เลือกในหน้านี้ไม่ได้ถูกส่งไปยัง สคบ. หรือเซิร์ฟเวอร์ของเว็บไซต์นี้<br><br>
+        หากปิดหรือรีเฟรชหน้าเว็บ จะต้องเลือกไฟล์ใหม่
+      </div>
+
+      <div class="navigation">
+        <button class="back-button" onclick="previousStep(3)">← ย้อนกลับ</button>
+        <button class="next-button" onclick="nextStep(3)">ตรวจความพร้อม →</button>
+      </div>
+    </section>
+
+    <section id="step4" class="step">
+      <div class="step-label">ขั้นตอนที่ 04</div>
+      <h2>ตรวจความพร้อมก่อนยื่น</h2>
+
+      <div class="readiness-card">
+        <div class="readiness-top">
+          <div>
+            <div class="readiness-label">ความพร้อมของคำร้อง</div>
+            <div id="readinessScore" class="readiness-score">0%</div>
+          </div>
+          <div id="readinessStatus" class="readiness-status">กำลังตรวจสอบ</div>
+        </div>
+        <div class="score-track"><div id="scoreBar" class="score-bar"></div></div>
+      </div>
+
+      <div id="readinessChecklist" class="checklist"></div>
+      <div id="missingWarning" class="missing-warning"></div>
+      <div id="summaryBox"></div>
+
+      <div class="quick-panel">
+        <h3>คัดลอกข้อมูล</h3>
+        <button onclick="copyField('problem')">คัดลอกรายละเอียดเรื่องร้องเรียน</button>
+        <button onclick="copyPayment()">คัดลอกวิธีการชำระเงิน</button>
+        <button onclick="copyRequest()">คัดลอกความประสงค์</button>
+        <button onclick="copyFullAddress()">คัดลอกที่อยู่ทั้งหมด</button>
+      </div>
+
+      <button class="copy-all-button" onclick="copySummary()">คัดลอกข้อมูลทั้งหมด</button>
+      <button class="ocpb-button" onclick="openOCPB()">ไปยังเว็บไซต์ สคบ.</button>
+      <button class="save-button" onclick="saveDraft(true)">บันทึกแบบร่าง</button>
+      <button class="reset-button" onclick="clearEverything()">ล้างข้อมูลทั้งหมด</button>
+
+      <div class="final-note">
+        <strong>ก่อนยื่นจริง</strong><br>
+        กรุณาตรวจสอบชื่อ ที่อยู่ จำนวนเงิน วันที่ และข้อเท็จจริงทุกครั้ง
+      </div>
+
+      <div class="navigation">
+        <button class="back-button" onclick="previousStep(4)">← ย้อนกลับ</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
