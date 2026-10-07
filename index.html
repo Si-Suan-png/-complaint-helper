@@ -29,17 +29,49 @@
       <div class="version">ระบบช่วยเตรียมข้อมูล</div>
       <h1>ผู้ช่วย <span>เตรียมคำร้อง</span></h1>
       <h2>เตรียมข้อมูลให้ครบ ก่อนยื่นเรื่องร้องเรียน</h2>
-      <p class="hero-text">จัดข้อมูลปัญหา • ตรวจหลักฐาน • ตรวจความพร้อม • สรุปข้อมูล</p>
+      <p class="hero-text">จัดข้อมูลปัญหา • ตรวจหลักฐาน • สร้างข้อความร้องเรียน • ไปต่อยังช่องทางราชการ</p>
 
       <div class="ready"><span></span>ระบบพร้อมใช้งาน</div>
 
-      <button class="primary-button" onclick="startComplaint()">เริ่มเตรียมคำร้อง</button>
+      <button class="primary-button" onclick="startComplaint()">สร้างคำร้องฟรีใน 3 นาที</button>
       <button id="continueButton" class="secondary-button" onclick="continueDraft()">เปิดแบบร่างล่าสุด</button>
 
       <p class="hero-note">
-        เว็บไซต์นี้ไม่ใช่เว็บไซต์ของสำนักงานคณะกรรมการคุ้มครองผู้บริโภค (สคบ.)
+        เว็บไซต์นี้เป็นเครื่องมือช่วยเตรียมข้อมูลก่อนเข้าสู่ระบบราชการ ไม่ใช่เว็บไซต์ของสำนักงานคณะกรรมการคุ้มครองผู้บริโภค (สคบ.)
         และไม่ได้ส่งคำร้องให้หน่วยงานใดโดยอัตโนมัติ
       </p>
+    </div>
+  </section>
+
+  <section id="quickStart" class="content-section">
+    <div class="section-label">เริ่มด่วน</div>
+    <h2 class="section-heading">เลือกปัญหาที่ใกล้เคียงกับคุณ</h2>
+    <p class="section-subtitle">กดหนึ่งครั้ง ระบบจะพาเข้าแบบฟอร์มและเลือกประเภทปัญหาเบื้องต้นให้ทันที</p>
+
+    <div class="quick-start-grid">
+      <button class="quick-start-card" onclick="startFromProblem('parcel')">
+        <span class="quick-icon">📦</span>
+        <strong>พัสดุเสียหาย</strong>
+        <small>ของเปียก แตก สูญหาย หรือเสียหายจากการขนส่ง</small>
+      </button>
+
+      <button class="quick-start-card" onclick="startFromProblem('refund')">
+        <span class="quick-icon">💸</span>
+        <strong>ร้านไม่คืนเงิน</strong>
+        <small>ยกเลิกหรือคืนสินค้าแล้ว ยังไม่ได้รับเงินคืน</small>
+      </button>
+
+      <button class="quick-start-card" onclick="startFromProblem('mismatch')">
+        <span class="quick-icon">🛍️</span>
+        <strong>ของไม่ตรงปก</strong>
+        <small>สินค้าไม่ตรงภาพ รายละเอียด หรือข้อความโฆษณา</small>
+      </button>
+
+      <button class="quick-start-card" onclick="startFromProblem('service')">
+        <span class="quick-icon">🛠️</span>
+        <strong>บริการมีปัญหา</strong>
+        <small>บริการไม่เป็นไปตามตกลง หรือไม่ได้รับการแก้ไข</small>
+      </button>
     </div>
   </section>
 
@@ -114,6 +146,8 @@
     <p>คุณสามารถกด <strong>“ล้างข้อมูลทั้งหมด”</strong> ภายในระบบเพื่อลบแบบร่างจากเบราว์เซอร์ได้</p>
   </section>
 
+  <div class="future-ad-slot" aria-hidden="true">พื้นที่โฆษณาในอนาคต</div>
+
   <footer>
     <strong>ผู้ช่วยเตรียมคำร้องผู้บริโภค</strong><br>
     เครื่องมืออิสระ • ไม่ใช่เว็บไซต์ของ สคบ.<br>
@@ -151,6 +185,8 @@
     <section id="step1" class="step active">
       <div class="step-label">ขั้นตอนที่ 01</div>
       <h2>ข้อมูลเรื่องร้องเรียน</h2>
+
+      <div id="quickStartBadge" class="prefill-badge hidden"></div>
 
       <label for="name">ชื่อผู้ร้องเรียน *</label>
       <input id="name" type="text" placeholder="ชื่อ-นามสกุล">
@@ -296,18 +332,18 @@
 
       <div class="navigation">
         <button class="back-button" onclick="previousStep(3)">← ย้อนกลับ</button>
-        <button class="next-button" onclick="nextStep(3)">ตรวจความพร้อม →</button>
+        <button class="next-button" onclick="nextStep(3)">ดูผลลัพธ์ →</button>
       </div>
     </section>
 
     <section id="step4" class="step">
       <div class="step-label">ขั้นตอนที่ 04</div>
-      <h2>ตรวจความพร้อมก่อนยื่น</h2>
+      <h2>ผลลัพธ์สำหรับนำไปใช้ต่อ</h2>
 
       <div class="readiness-card">
         <div class="readiness-top">
           <div>
-            <div class="readiness-label">ความพร้อมของคำร้อง</div>
+            <div class="readiness-label">ความพร้อมของข้อมูล</div>
             <div id="readinessScore" class="readiness-score">0%</div>
           </div>
           <div id="readinessStatus" class="readiness-status">กำลังตรวจสอบ</div>
@@ -315,26 +351,44 @@
         <div class="score-track"><div id="scoreBar" class="score-bar"></div></div>
       </div>
 
-      <div id="readinessChecklist" class="checklist"></div>
+      <div class="result-card result-highlight">
+        <div class="result-heading">
+          <div>
+            <span class="result-kicker">ผลลัพธ์หลัก</span>
+            <h3>ข้อความร้องเรียนพร้อมใช้</h3>
+          </div>
+          <button class="mini-copy-button" onclick="copyGeneratedComplaint()">คัดลอก</button>
+        </div>
+        <div id="generatedComplaint" class="generated-complaint"></div>
+        <p class="result-note">กรุณาตรวจสอบชื่อ จำนวนเงิน วันที่ และข้อเท็จจริงก่อนนำไปใช้จริง</p>
+      </div>
+
+      <div class="result-card">
+        <span class="result-kicker">CHECKLIST</span>
+        <h3>ข้อมูลและหลักฐานที่ควรตรวจ</h3>
+        <div id="readinessChecklist" class="checklist"></div>
+        <div id="evidenceChecklist" class="evidence-checklist"></div>
+      </div>
+
       <div id="missingWarning" class="missing-warning"></div>
       <div id="summaryBox"></div>
 
-      <div class="quick-panel">
-        <h3>คัดลอกข้อมูล</h3>
-        <button onclick="copyField('problem')">คัดลอกรายละเอียดเรื่องร้องเรียน</button>
-        <button onclick="copyPayment()">คัดลอกวิธีการชำระเงิน</button>
-        <button onclick="copyRequest()">คัดลอกความประสงค์</button>
-        <button onclick="copyFullAddress()">คัดลอกที่อยู่ทั้งหมด</button>
+      <div class="result-card next-step-card">
+        <span class="result-kicker">ขั้นตอนถัดไป</span>
+        <h3>นำข้อมูลไปยื่นเรื่องกับหน่วยงานที่เกี่ยวข้อง</h3>
+        <p>เวอร์ชันนี้ใช้ระบบร้องทุกข์ของ สคบ. เป็นช่องทางหลัก ระบบของเราไม่ส่งข้อมูลแทนคุณ</p>
+        <button class="ocpb-button" onclick="openOCPB()">ไปยื่นเรื่องกับ สคบ. →</button>
+        <button class="copy-all-button" onclick="copySummary()">คัดลอกข้อมูลทั้งหมด</button>
       </div>
 
-      <button class="copy-all-button" onclick="copySummary()">คัดลอกข้อมูลทั้งหมด</button>
-      <button class="ocpb-button" onclick="openOCPB()">ไปยังเว็บไซต์ สคบ.</button>
       <button class="save-button" onclick="saveDraft(true)">บันทึกแบบร่าง</button>
       <button class="reset-button" onclick="clearEverything()">ล้างข้อมูลทั้งหมด</button>
 
+      <div class="future-ad-slot" aria-hidden="true">พื้นที่โฆษณาในอนาคต</div>
+
       <div class="final-note">
         <strong>ก่อนยื่นจริง</strong><br>
-        กรุณาตรวจสอบชื่อ ที่อยู่ จำนวนเงิน วันที่ และข้อเท็จจริงทุกครั้ง
+        กรุณาตรวจสอบข้อมูลและหลักฐานทุกครั้ง เว็บไซต์นี้เป็นตัวช่วยเตรียมข้อมูล ไม่ใช่หน่วยงานราชการ
       </div>
 
       <div class="navigation">
