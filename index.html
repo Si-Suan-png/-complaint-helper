@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Complaint Helper: privacy content update -->
+<!-- Complaint Helper V21: parcel guidance and private-by-default drafts -->
 <html lang="th">
 <head>
   <meta charset="UTF-8">
@@ -28,8 +28,8 @@
 
     <div class="hero-card">
       <div class="version">ระบบช่วยเตรียมข้อมูล</div>
-      <h1>ผู้ช่วย <span>เตรียมคำร้อง</span></h1>
-      <h2>เตรียมข้อมูลให้ครบ ก่อนยื่นเรื่องร้องเรียน</h2>
+      <h1>มีปัญหากับร้านค้า ขนส่ง หรือบริการ?<span>เราช่วยเตรียมเรื่องร้องเรียน</span></h1>
+      <h2>ตอบคำถามง่าย ๆ แล้วนำข้อความไปใช้ได้ทันที</h2>
       <p class="hero-text">ฟรี • ไม่ต้องสมัครสมาชิก • ตอบทีละข้อ • สร้างข้อความร้องเรียน • พาไปช่องทางที่เหมาะสม</p>
 
       <div class="ready"><span></span>ระบบพร้อมใช้งาน</div>
@@ -299,8 +299,48 @@
 
       <article class="wizard-question" data-wizard="5">
         <span class="wizard-kicker">คำถาม 5</span>
-        <h3>คุณเคยติดต่อร้านหรือบริษัทแล้วหรือยัง?</h3>
-        <p class="wizard-help">ข้อมูลนี้ช่วยให้คำร้องบอกได้ว่าคุณพยายามแก้ปัญหากับผู้ประกอบการมาก่อนหรือไม่</p>
+        <h3 id="contactQuestionTitle">คุณเคยติดต่อร้านหรือบริษัทแล้วหรือยัง?</h3>
+        <p id="contactQuestionHelp" class="wizard-help">ข้อมูลนี้ช่วยให้คำร้องบอกได้ว่าคุณพยายามแก้ปัญหากับผู้ประกอบการมาก่อนหรือไม่</p>
+
+        <div id="parcelDetails" class="parcel-details hidden">
+          <div class="parcel-title">📦 รายละเอียดการขนส่ง</div>
+          <p class="parcel-help">ข้อมูลต่อไปนี้ช่วยเลือกขั้นตอนที่เหมาะสมและทำให้ข้อความร้องเรียนชัดขึ้น หากไม่ทราบสามารถเว้นช่องที่ไม่จำเป็นได้</p>
+
+          <label for="shippingCarrier">ใช้บริษัทขนส่งอะไร?</label>
+          <select id="shippingCarrier" onchange="updateParcelFields();saveDraft()">
+            <option value="">-- ยังไม่ทราบ / ยังไม่เลือก --</option>
+            <option value="ไปรษณีย์ไทย">ไปรษณีย์ไทย / EMS</option>
+            <option value="Flash Express">Flash Express</option>
+            <option value="J&T Express">J&amp;T Express</option>
+            <option value="KEX Express">KEX Express (เดิม Kerry)</option>
+            <option value="SPX Express">SPX Express</option>
+            <option value="DHL">DHL</option>
+            <option value="อื่น ๆ">อื่น ๆ</option>
+          </select>
+          <div id="shippingCarrierOtherWrap" class="hidden">
+            <label for="shippingCarrierOther">ชื่อบริษัทขนส่ง</label>
+            <input id="shippingCarrierOther" type="text" placeholder="ระบุบริษัทขนส่ง ถ้าทราบ">
+          </div>
+          <button class="parcel-fill-button" type="button" onclick="fillCarrierAsCompany()">ใช้ชื่อบริษัทขนส่งเป็นชื่อผู้ถูกร้อง (กรณีร้องบริษัทขนส่ง)</button>
+
+          <div class="parcel-two-cols">
+            <div>
+              <label for="trackingNumber">เลขพัสดุ / เลขติดตาม</label>
+              <input id="trackingNumber" type="text" autocomplete="off" placeholder="เช่น EA123456789TH">
+            </div>
+            <div>
+              <label for="parcelRole">คุณเป็นผู้ส่งหรือผู้รับ?</label>
+              <select id="parcelRole">
+                <option value="">-- เลือกถ้าทราบ --</option>
+                <option value="ผู้ส่ง">ผู้ส่ง</option>
+                <option value="ผู้รับ">ผู้รับ</option>
+                <option value="ผู้ส่งและผู้รับ">ผู้ส่งและผู้รับ</option>
+                <option value="อื่น ๆ / ไม่แน่ใจ">อื่น ๆ / ไม่แน่ใจ</option>
+              </select>
+            </div>
+          </div>
+          <p class="parcel-help">เลขพัสดุและชื่อบริษัทจะเก็บไว้กับแบบร่างในเบราว์เซอร์เท่านั้น ไม่ส่งไปที่หน่วยงานอัตโนมัติ</p>
+        </div>
 
         <div class="wizard-radio-grid">
           <label class="wizard-radio"><input type="radio" name="contactedBusiness" value="ติดต่อแล้ว" onchange="updateContactFields(); saveDraft()">✓ ติดต่อแล้ว</label>
@@ -308,8 +348,14 @@
         </div>
 
         <div id="contactOutcomeWrap" class="conditional-field hidden">
-          <label for="contactOutcome">ร้าน / บริษัทตอบว่าอย่างไร?</label>
+          <label id="contactOutcomeLabel" for="contactOutcome">ร้าน / บริษัทตอบว่าอย่างไร?</label>
           <textarea id="contactOutcome" placeholder="เช่น แจ้งว่าจะชดเชยไม่เกิน 2,000 บาท หรือยังไม่ตอบกลับ"></textarea>
+          <label for="contactDate">วันที่ติดต่อครั้งล่าสุด (ถ้าทราบ)</label>
+          <input id="contactDate" type="date">
+          <div id="parcelClaimWrap" class="hidden">
+            <label for="parcelClaimNumber">เลขเรื่องร้องเรียน / เลขเคสที่บริษัทให้ (ถ้ามี)</label>
+            <input id="parcelClaimNumber" type="text" autocomplete="off" placeholder="เลขอ้างอิงที่บริษัทขนส่งแจ้งให้">
+          </div>
         </div>
 
         <div class="wizard-nav">
@@ -505,7 +551,7 @@
       <div class="result-card routing-card">
         <span class="result-kicker">SMART ROUTING</span>
         <h3>เคสนี้ควรเริ่มที่ไหน?</h3>
-        <p class="routing-disclaimer">คำแนะนำนี้เป็นการคัดกรองเบื้องต้นจากประเภทปัญหาที่คุณเลือก ไม่ใช่การวินิจฉัยทางกฎหมาย และควรตรวจสอบขอบเขตอำนาจของหน่วยงานก่อนยื่นจริง</p>
+        <p class="routing-disclaimer">คำแนะนำเบื้องต้นจากคำตอบของคุณ ไม่ใช่การวินิจฉัยทางกฎหมายหรือการรับรองว่าหน่วยงานจะรับเรื่อง หากเป็นข้อพิพาทกับร้านค้าและบริษัทขนส่งพร้อมกัน อาจต้องแยกประเด็นร้องเรียน</p>
         <div id="routingResult" class="routing-result"></div>
       </div>
 

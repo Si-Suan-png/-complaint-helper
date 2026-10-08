@@ -348,3 +348,14 @@ label{display:block;margin:18px 0 7px;color:#c2dde3;font-size:14px}input,select,
   .policy-wrap{padding:36px 16px 60px}
   .policy-card{padding:22px 18px}
 }
+
+
+/* V21 — conditional courier questions and honest routing */
+.parcel-details{margin:12px 0 24px;padding:18px;border:1px solid rgba(34,255,174,.26);border-radius:12px;background:rgba(34,255,174,.035)}
+.parcel-title{font-weight:700;color:#bafde4;font-size:17px}
+.parcel-help{color:var(--muted);line-height:1.65;font-size:13px}
+.parcel-two-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.parcel-fill-button{width:100%;margin:13px 0 6px;padding:12px;border:1px dashed rgba(34,255,174,.35);border-radius:9px;background:rgba(34,255,174,.06);color:#aff4da}
+.parcel-route-note{padding:12px;color:#bedde0;border:1px solid rgba(0,234,255,.16);border-radius:10px;font-size:13px;line-height:1.6}
+.evidence-note{font-size:12px;color:#8eaeb8;line-height:1.6}
+@media(max-width:760px){.parcel-two-cols{grid-template-columns:1fr}.parcel-details{padding:14px}}

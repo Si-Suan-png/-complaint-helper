@@ -1,12 +1,13 @@
 let currentStep=1;
 let currentWizardQuestion=1;
 let currentComplaintTone="official";
+let pendingAddressRestore=null;
 let autoSaveTimer=null,saveStatusTimer=null,toastTimer=null;
 const AUTO_SAVE_DELAY=1500;
 const STORAGE_KEY="consumerComplaintProductionV16";
 
 /*
-  VERSION 19 — Privacy-first analytics + Complaint Wizard + Smart Routing
+  VERSION 21 — Thai parcel case guidance + Privacy-first Smart Routing
   ------------------------------------
   ระบบนี้ "ไม่ส่งค่าจากฟอร์ม" ไปยัง Analytics
   ส่งได้เฉพาะชื่อ Event ที่อยู่ใน ANALYTICS_EVENTS เท่านั้น
@@ -50,6 +51,7 @@ const ANALYTICS_EVENTS=new Set([
   "route_open_nbtc",
   "route_open_oic",
   "route_open_bot",
+  "route_open_thpost",
   "share_line",
   "share_facebook",
   "share_copy_link",
@@ -160,6 +162,7 @@ function startFromProblem(type){
   badge.textContent=`เริ่มจากปัญหา: ${selected.label}`;
   badge.classList.remove("hidden");
 
+  updateParcelFields();
   setWizardQuestion(2);
   saveDraft();
   showToast(`เลือก "${selected.label}" ให้แล้ว`);
@@ -168,6 +171,7 @@ function chooseCategory(value,button){
   document.getElementById("category").value=value;
   document.querySelectorAll(".wizard-choice").forEach(item=>item.classList.remove("selected"));
   if(button)button.classList.add("selected");
+  updateParcelFields();
   saveDraft();
 }
 function syncCategoryButtons(){
@@ -180,7 +184,7 @@ function radioValue(name){
   const selected=document.querySelector(`input[name="${name}"]:checked`);
   return selected?selected.value:"";
 }
-function setWizardQuestion(question,scroll=true){
+function setWizardQuestion(question,scroll=true,shouldSave=true){
   const q=Math.max(1,Math.min(7,Number(question)||1));
   currentWizardQuestion=q;
   document.querySelectorAll(".wizard-question").forEach(card=>{
@@ -194,8 +198,9 @@ function setWizardQuestion(question,scroll=true){
   if(percentLabel)percentLabel.textContent=`${percent}%`;
   if(bar)bar.style.width=`${percent}%`;
   if(q===7)updateWizardReview();
+  if(q===5)updateParcelFields();
   if(scroll)window.scrollTo({top:0,behavior:"smooth"});
-  saveDraft();
+  if(shouldSave)saveDraft();
 }
 function validateWizardQuestion(question){
   if(question===1&&!valueOf("category")){
@@ -232,10 +237,55 @@ function wizardNext(question){
 function wizardBack(question){
   setWizardQuestion(question-1);
 }
+
+const PARCEL_CATEGORY="ปัญหาการขนส่ง";
+function isParcelCase(){return valueOf("category")===PARCEL_CATEGORY}
+function shippingCarrierName(){
+  if(!isParcelCase())return "";
+  const chosen=valueOf("shippingCarrier");
+  return chosen==="อื่น ๆ"?valueOf("shippingCarrierOther"):chosen;
+}
+function updateParcelFields(){
+  const parcel=isParcelCase();
+  const details=document.getElementById("parcelDetails");
+  if(details)details.classList.toggle("hidden",!parcel);
+  const other=document.getElementById("shippingCarrierOtherWrap");
+  if(other)other.classList.toggle("hidden",!parcel||valueOf("shippingCarrier")!=="อื่น ๆ");
+  const claim=document.getElementById("parcelClaimWrap");
+  if(claim)claim.classList.toggle("hidden",!parcel||radioValue("contactedBusiness")!=="ติดต่อแล้ว");
+  const title=document.getElementById("contactQuestionTitle");
+  if(title)title.textContent=parcel?"คุณเคยติดต่อบริษัทขนส่งแล้วหรือยัง?":"คุณเคยติดต่อร้านหรือบริษัทแล้วหรือยัง?";
+  const help=document.getElementById("contactQuestionHelp");
+  if(help)help.textContent=parcel?"ระบุผู้ให้บริการ เลขติดตาม และผลการติดต่อ เพื่อให้คำร้องมีข้อมูลอ้างอิง":"ข้อมูลนี้ช่วยให้คำร้องบอกได้ว่าคุณพยายามแก้ปัญหากับผู้ประกอบการมาก่อนหรือไม่";
+  const outcome=document.getElementById("contactOutcomeLabel");
+  if(outcome)outcome.textContent=parcel?"บริษัทขนส่งตอบว่าอย่างไร?":"ร้าน / บริษัทตอบว่าอย่างไร?";
+}
+function fillCarrierAsCompany(){
+  const carrier=shippingCarrierName();
+  if(!carrier){showToast("กรุณาเลือกหรือกรอกชื่อบริษัทขนส่งก่อน");return}
+  const field=document.getElementById("company");
+  if(field.value.trim()&&field.value.trim()!==carrier){
+    if(!confirm("ชื่อผู้ถูกร้องเรียนมีข้อมูลอยู่แล้ว ต้องการเปลี่ยนเป็นชื่อบริษัทขนส่งใช่หรือไม่?"))return;
+  }
+  field.value=carrier;
+  saveDraft();
+  showToast(`เพิ่มชื่อผู้ถูกร้องเรียน: ${carrier}`);
+}
+function parcelCaseFacts(){
+  if(!isParcelCase())return [];
+  const facts=[];
+  if(shippingCarrierName())facts.push(`ผู้ให้บริการขนส่ง: ${shippingCarrierName()}`);
+  if(valueOf("trackingNumber"))facts.push(`เลขพัสดุ: ${valueOf("trackingNumber")}`);
+  if(valueOf("parcelRole"))facts.push(`สถานะผู้ร้องในเหตุการณ์: ${valueOf("parcelRole")}`);
+  if(valueOf("parcelClaimNumber")&&radioValue("contactedBusiness")==="ติดต่อแล้ว")facts.push(`เลขอ้างอิงเรื่องที่แจ้งบริษัทขนส่ง: ${valueOf("parcelClaimNumber")}`);
+  return facts;
+}
+
 function updateContactFields(){
   const wrap=document.getElementById("contactOutcomeWrap");
   if(!wrap)return;
   wrap.classList.toggle("hidden",radioValue("contactedBusiness")!=="ติดต่อแล้ว");
+  updateParcelFields();
 }
 function updateWizardReview(){
   const box=document.getElementById("wizardReview");
@@ -269,7 +319,7 @@ function saveDraft(showMessage=false){clearTimeout(autoSaveTimer);setSaveStatus(
 function forceSaveNow(){clearTimeout(autoSaveTimer);saveDraft()}
 function getDraftData(){
   return{
-    version:18,
+    version:21,
     currentStep,
     wizardQuestion:currentWizardQuestion,
     name:valueOf("name"),
@@ -282,6 +332,12 @@ function getDraftData(){
     requestDetail:valueOf("requestDetail"),
     contactedBusiness:radioValue("contactedBusiness"),
     contactOutcome:valueOf("contactOutcome"),
+    contactDate:valueOf("contactDate"),
+    shippingCarrier:valueOf("shippingCarrier"),
+    shippingCarrierOther:valueOf("shippingCarrierOther"),
+    trackingNumber:valueOf("trackingNumber"),
+    parcelRole:valueOf("parcelRole"),
+    parcelClaimNumber:valueOf("parcelClaimNumber"),
     company:valueOf("company"),
     companyDetail:valueOf("companyDetail"),
     address:valueOf("address"),
@@ -334,6 +390,7 @@ function complaintFacts(){
   if(checkedValues("payment").length)facts.push(`วิธีการชำระเงิน: ${checkedValues("payment").join(", ")}`);
   if(valueOf("company"))facts.push(`ผู้ประกอบการ/ผู้ถูกร้องเรียน: ${valueOf("company")}`);
   if(valueOf("damage"))facts.push(`มูลค่าความเสียหายที่ระบุ: ${moneyText(valueOf("damage"))}`);
+  facts.push(...parcelCaseFacts());
   return facts;
 }
 function buildGeneratedComplaint(tone=currentComplaintTone){
@@ -348,14 +405,16 @@ function buildGeneratedComplaint(tone=currentComplaintTone){
   const incident=valueOf("incidentDate")?formatThaiDate(valueOf("incidentDate")):"";
   const payment=checkedValues("payment").join(", ");
   const requests=requestSentence();
+  const parcelLine=parcelCaseFacts().length?`\n\nข้อมูลการจัดส่ง\n${parcelCaseFacts().join("\n")}`:"";
 
   let contactText="";
   if(contacted==="ติดต่อแล้ว"){
     contactText=`ข้าพเจ้าได้ติดต่อ ${company} เพื่อขอให้แก้ไขปัญหาแล้ว`;
     if(contactOutcome)contactText+=` โดยได้รับคำตอบ/ผลการติดต่อว่า ${contactOutcome}`;
+    if(valueOf("contactDate"))contactText+=` เมื่อวันที่ ${formatThaiDate(valueOf("contactDate"))}`;
     contactText+=".";
   }else if(contacted==="ยังไม่ได้ติดต่อ"){
-    contactText=`ขณะจัดทำข้อความนี้ ข้าพเจ้ายังไม่ได้ติดต่อ ${company} เพื่อขอให้แก้ไขปัญหาโดยตรง.`;
+    contactText=isParcelCase()?"ขณะจัดทำข้อความนี้ ข้าพเจ้ายังไม่ได้ติดต่อบริษัทขนส่งเพื่อขอให้ตรวจสอบปัญหาโดยตรง.":`ขณะจัดทำข้อความนี้ ข้าพเจ้ายังไม่ได้ติดต่อ ${company} เพื่อขอให้แก้ไขปัญหาโดยตรง.`;
   }
 
   if(tone==="polite"){
@@ -364,6 +423,7 @@ function buildGeneratedComplaint(tone=currentComplaintTone){
     if(paid)text+=` โดยมีมูลค่าที่ชำระ ${paid}`;
     if(payment)text+=` ชำระผ่าน ${payment}`;
     text+=`.\n\nรายละเอียดปัญหา\n${problem}`;
+    if(parcelLine)text+=parcelLine;
     if(contactText)text+=`\n\n${contactText}`;
     text+=`\n\nสิ่งที่ต้องการให้ช่วยดำเนินการ\n${requests}`;
     text+=`\n\nจึงขอความกรุณาตรวจสอบและแจ้งแนวทางแก้ไขให้ทราบ หากต้องการข้อมูลหรือหลักฐานเพิ่มเติม ข้าพเจ้ายินดีจัดส่งให้เพื่อประกอบการพิจารณา\n\nขอบคุณครับ/ค่ะ\n${name}`;
@@ -375,6 +435,7 @@ function buildGeneratedComplaint(tone=currentComplaintTone){
     if(incident)text+=` โดยเหตุเกิดเมื่อวันที่ ${incident}`;
     if(paid)text+=` และมีจำนวนเงินที่ชำระ ${paid}`;
     text+=`.\n\nข้อเท็จจริง\n${problem}`;
+    if(parcelLine)text+=parcelLine;
     if(contactText)text+=`\n\nการติดต่อผู้ประกอบการ\n${contactText}`;
     text+=`\n\nความประสงค์\n${requests}`;
     if(valueOf("damage"))text+=`\n\nมูลค่าความเสียหายที่ระบุ: ${moneyText(valueOf("damage"))}`;
@@ -405,9 +466,22 @@ function copyGeneratedComplaint(){
   copyText(buildGeneratedComplaint(currentComplaintTone),"คัดลอกข้อความร้องเรียนแล้ว");
 }
 function hasEvidence(keyword){return getSelectedFiles().some(item=>item.type.includes(keyword))}
-function getEvidenceRecommendations(){const c=valueOf("category");const list=[{label:"หลักฐานการชำระเงิน / ใบเสร็จ",passed:hasEvidence("ชำระเงิน")||hasEvidence("ใบเสร็จ")},{label:"ภาพถ่ายสินค้า / ความเสียหาย",passed:hasEvidence("ภาพถ่าย")},{label:"หลักฐานการสนทนากับร้านหรือบริษัท",passed:hasEvidence("การสนทนา")}];if(c==="ปัญหาการขนส่ง")list.push({label:"ภาพกล่อง บรรจุภัณฑ์ และความเสียหายจากขนส่ง",passed:hasEvidence("ภาพถ่าย")});if(c==="โฆษณาไม่ตรงความจริง")list.push({label:"ภาพหรือเอกสารโฆษณาที่ใช้เปรียบเทียบ",passed:hasEvidence("โฆษณา")});if(c==="ร้านค้าออนไลน์")list.push({label:"เลขที่คำสั่งซื้อหรือหลักฐานการสั่งซื้อ",passed:hasEvidence("คำสั่งซื้อ")});return list}
+function getEvidenceRecommendations(){
+  if(isParcelCase())return [
+    {label:"เลขพัสดุหรือหลักฐานการส่ง (ถ้ามี)",passed:Boolean(valueOf("trackingNumber"))},
+    {label:"ภาพกล่องพัสดุภายนอกและวัสดุกันกระแทก",passed:hasEvidence("ภาพถ่าย")},
+    {label:"ภาพความเสียหายของสินค้า",passed:hasEvidence("ภาพถ่าย")},
+    {label:"ใบเสร็จ / หลักฐานมูลค่าสินค้า",passed:hasEvidence("ใบเสร็จ")||hasEvidence("ชำระเงิน")},
+    {label:"ผลการติดต่อบริษัทขนส่ง (แชต / อีเมล / เลขเคส)",passed:hasEvidence("การสนทนา")||Boolean(valueOf("parcelClaimNumber"))},
+  ];
+  const c=valueOf("category");
+  const list=[{label:"หลักฐานการชำระเงิน / ใบเสร็จ",passed:hasEvidence("ชำระเงิน")||hasEvidence("ใบเสร็จ")},{label:"ภาพถ่ายสินค้า / ความเสียหาย",passed:hasEvidence("ภาพถ่าย")},{label:"หลักฐานการสนทนากับร้านหรือบริษัท",passed:hasEvidence("การสนทนา")}];
+  if(c==="โฆษณาไม่ตรงความจริง")list.push({label:"ภาพหรือเอกสารโฆษณาที่ใช้เปรียบเทียบ",passed:hasEvidence("โฆษณา")});
+  if(c==="ร้านค้าออนไลน์")list.push({label:"เลขที่คำสั่งซื้อหรือหลักฐานการสั่งซื้อ",passed:hasEvidence("คำสั่งซื้อ")});
+  return list;
+}
 function improveComplaint(){
-  showToast("Version 18 ใช้ Wizard และสร้างข้อความให้อัตโนมัติที่หน้าผลลัพธ์");
+  showToast("ระบบใช้ Wizard และสร้างข้อความให้อัตโนมัติที่หน้าผลลัพธ์");
 }
 function nextStep(step){
   if(step===1){
@@ -480,6 +554,13 @@ const AGENCIES={
     reason:"เหมาะกับข้อพิพาทหรือปัญหาที่เกี่ยวข้องกับบริษัทประกันภัย ตัวแทน นายหน้า หรือการเคลมประกัน",
     event:"route_open_oic"
   },
+  thpost:{
+    name:"ไปรษณีย์ไทย — แจ้งสอบสวน/ร้องเรียนบริการ",
+    short:"ไปรษณีย์ไทย",
+    url:"https://www.thailandpost.co.th/un/form/complaints/?form_id=3",
+    reason:"แจ้งเลขพัสดุ รายละเอียดเหตุ และขอให้บริษัทตรวจสอบก่อน โดยติดต่อ 1545 หรือที่ทำการไปรษณีย์ที่เกี่ยวข้องได้",
+    event:"route_open_thpost"
+  },
   bot:{
     name:"ธนาคารแห่งประเทศไทย — บริการช่วยเหลือ/ร้องเรียน",
     short:"ธปท.",
@@ -518,7 +599,29 @@ function openAgency(key){
   window.open(agency.url,"_blank","noopener");
 }
 
+function renderParcelRouting(){
+  const box=document.getElementById("routingResult");
+  const carrier=shippingCarrierName();
+  const contacted=radioValue("contactedBusiness")==="ติดต่อแล้ว";
+  const isThailandPost=carrier==="ไปรษณีย์ไทย";
+  const answered=Boolean(valueOf("contactOutcome"));
+  const primaryAction=isThailandPost&&!contacted
+    ?`<button type="button" class="ocpb-button route-button" onclick="openAgency('thpost')">เปิดแบบฟอร์มร้องเรียนไปรษณีย์ไทย →</button>`
+    :"";
+  const providerGuidance=isThailandPost
+    ?"ติดต่อที่ทำการไปรษณีย์ที่เกี่ยวข้องหรือ THP Contact Center 1545 และเก็บเลขรับเรื่องไว้"
+    :carrier?`ติดต่อ ${escapeHTML(carrier)} ผ่านช่องทางช่วยเหลือทางการที่คุณตรวจสอบได้ และเก็บเลขเคส/แชตไว้`:
+    "ตรวจสอบใบเสร็จหรือเลขพัสดุเพื่อระบุบริษัทขนส่งก่อน แล้วแจ้งปัญหากับผู้ให้บริการ";
+  let html=`<div class="route-primary"><span class="route-badge">${contacted?"ตรวจสอบผลการร้องเรียนกับบริษัท":"ขั้นตอนแรกที่แนะนำ"}</span><div class="route-title">📦 ${contacted?"ตรวจสอบผลการติดต่อบริษัทขนส่ง":"ติดต่อบริษัทขนส่งก่อน"}</div><p class="route-reason">${providerGuidance}${contacted?" หากยังไม่ได้รับการแก้ไขให้ตรวจสอบช่องทางร้องทุกข์ผู้บริโภคด้านล่าง":""}</p>${primaryAction}</div>`;
+  if(isThailandPost&&contacted){
+    html+=`<div class="route-secondary"><span class="route-badge">กลับไปติดตามบริษัท</span><div class="route-title">ไปรษณีย์ไทย / 1545</div><p class="route-reason">ติดตามผลผ่านช่องทางรับเรื่องของไปรษณีย์ไทย หากยังไม่ได้คำตอบหรือยังไม่สามารถแก้ไขได้</p><button type="button" class="secondary-action-button route-button" onclick="openAgency('thpost')">ช่องทางร้องเรียนไปรษณีย์ไทย →</button></div>`;
+  }
+  html+=`<div class="route-secondary"><span class="route-badge">ช่องทางร้องทุกข์ผู้บริโภค หากยังแก้ไขไม่ได้</span><div class="route-title">สำนักงานคณะกรรมการคุ้มครองผู้บริโภค (สคบ.)</div><p class="route-reason">สำหรับข้อพิพาทผู้บริโภคที่เกี่ยวกับการให้บริการขนส่ง ควรตรวจสอบข้อเท็จจริง ผู้ถูกร้อง และขอบเขตที่ สคบ. รับพิจารณาก่อนยื่น</p><button type="button" class="secondary-action-button route-button" onclick="openAgency('ocpb')">ตรวจสอบช่องทาง สคบ. →</button></div>`;
+  html+=`<p class="parcel-route-note">${answered?"คุณระบุผลการติดต่อไว้แล้ว ควรแนบหลักฐานข้อความตอบกลับประกอบคำร้องด้วย":"หากได้รับข้อเสนอชดเชย โปรดเก็บเอกสาร/ข้อความระบุจำนวนเงินและเงื่อนไขไว้"} ความรับผิดและสิทธิรับเงินชดเชยอาจขึ้นกับผู้ส่ง/ผู้รับ ประเภทบริการ และเงื่อนไขการฝากส่ง</p>`;
+  box.innerHTML=html;
+}
 function renderRouting(){
+  if(isParcelCase()){renderParcelRouting();return}
   const box=document.getElementById("routingResult");
   if(!box)return;
 
@@ -550,6 +653,16 @@ function renderRouting(){
 function renderNextSteps(){
   const box=document.getElementById("nextSteps");
   if(!box)return;
+  if(isParcelCase()){
+    const company=shippingCarrierName()||"ผู้ให้บริการขนส่ง";
+    const already=radioValue("contactedBusiness")==="ติดต่อแล้ว";
+    box.innerHTML=`
+      <div class="next-step-item"><div class="next-step-number">1</div><div><strong>รักษาหลักฐานความเสียหาย</strong><br><span class="muted">ถ่ายรูปกล่อง ใบปะหน้า ของภายใน ใบเสร็จ และเก็บบรรจุภัณฑ์ไว้ก่อน</span></div></div>
+      <div class="next-step-item"><div class="next-step-number">2</div><div><strong>${already?"ติดตามเลขเคสและผลการชดเชย":"แจ้งความเสียหายกับบริษัทขนส่ง"}</strong><br><span class="muted">${already?"เก็บหลักฐานคำตอบและวันที่ติดต่อทุกครั้ง":`ติดต่อ ${escapeHTML(company)} พร้อมเลขพัสดุและหลักฐานโดยเร็ว`}</span></div></div>
+      <div class="next-step-item"><div class="next-step-number">3</div><div><strong>หากแก้ไขไม่ได้ ค่อยพิจารณาช่องทางร้องทุกข์</strong><br><span class="muted">ตรวจสอบสิทธิผู้ส่ง/ผู้รับ เงื่อนไขบริการ และช่องทาง สคบ. ที่แนะนำ</span></div></div>
+      <div class="next-step-item"><div class="next-step-number">4</div><div><strong>เก็บเลขอ้างอิงทุกช่องทาง</strong><br><span class="muted">บันทึกวันที่ยื่น เลขรับเรื่อง และผลตอบกลับไว้ติดตาม</span></div></div>`;
+    return;
+  }
   box.innerHTML=`
     <div class="next-step-item"><div class="next-step-number">1</div><div><strong>ตรวจข้อความและหลักฐาน</strong><br><span class="muted">เช็กชื่อ วันที่ จำนวนเงิน และข้อเท็จจริงก่อนส่ง</span></div></div>
     <div class="next-step-item"><div class="next-step-number">2</div><div><strong>ติดต่อผู้ประกอบการก่อน ถ้าเหมาะสม</strong><br><span class="muted">เก็บแชต อีเมล เลขอ้างอิง หรือหลักฐานการติดต่อไว้</span></div></div>
@@ -572,6 +685,13 @@ function calculateReadiness(){
     {name:paymentRelevant?"วิธีการชำระเงิน":"จำนวนเงิน / การชำระเงิน (ถ้าเกี่ยวข้อง)",passed:paymentRelevant?checkedValues("payment").length>0:true},
     {name:"หลักฐานประกอบ",passed:files.length>0}
   ];
+  if(isParcelCase()){
+    checks.push({name:"ชื่อบริษัทขนส่ง (ถ้าทราบ)",passed:Boolean(shippingCarrierName())});
+    checks.push({name:"เลขพัสดุ (ถ้ามี)",passed:Boolean(valueOf("trackingNumber"))});
+    if(radioValue("contactedBusiness")==="ติดต่อแล้ว"){
+      checks.push({name:"วันที่ติดต่อบริษัท (ถ้าทราบ)",passed:Boolean(valueOf("contactDate"))});
+    }
+  }
   const passed=checks.filter(i=>i.passed).length;
   return{score:Math.round((passed/checks.length)*100),checks}
 }
@@ -583,7 +703,7 @@ function createFinalReview(){
   document.getElementById("readinessChecklist").innerHTML=result.checks.map(i=>`<div class="check-item ${i.passed?"ok":"missing"}">${i.passed?"✓":"!"} ${escapeHTML(i.name)}</div>`).join("");
 
   const evidence=getEvidenceRecommendations();
-  document.getElementById("evidenceChecklist").innerHTML=`<h4>หลักฐานที่ควรมี</h4>${evidence.map(i=>`<div class="evidence-item ${i.passed?"ok":"missing"}">${i.passed?"✓ มีแล้ว":"• ควรเพิ่ม"} — ${escapeHTML(i.label)}</div>`).join("")}`;
+  document.getElementById("evidenceChecklist").innerHTML=`<h4>หลักฐานที่อาจเป็นประโยชน์ (ถ้ามี)</h4><p class="evidence-note">เครื่องหมายว่ามีแล้วหมายถึงคุณเลือกไฟล์ในหมวดใกล้เคียง หรือระบุเลขพัสดุ ระบบยังไม่ได้อ่านหรือตรวจสอบเนื้อหาไฟล์</p>${evidence.map(i=>`<div class="evidence-item ${i.passed?"ok":"missing"}">${i.passed?"✓ มีแล้ว":"• ควรเพิ่ม"} — ${escapeHTML(i.label)}</div>`).join("")}`;
 
   const missing=result.checks.filter(i=>!i.passed);
   const warning=document.getElementById("missingWarning");
@@ -623,7 +743,10 @@ function getFirstMissingTarget(){
     "ชื่อผู้ถูกร้องเรียน":{step:2},
     "วิธีการชำระเงิน":{step:1,wizard:3},
     "จำนวนเงิน / การชำระเงิน (ถ้าเกี่ยวข้อง)":{step:1,wizard:3},
-    "หลักฐานประกอบ":{step:3}
+    "หลักฐานประกอบ":{step:3},
+    "ชื่อบริษัทขนส่ง (ถ้าทราบ)":{step:1,wizard:5},
+    "เลขพัสดุ (ถ้ามี)":{step:1,wizard:5},
+    "วันที่ติดต่อบริษัท (ถ้าทราบ)":{step:1,wizard:5}
   };
   return map[missing.name]||{step:1,wizard:1};
 }
@@ -655,6 +778,11 @@ function createSummary(){
       ${summaryRow("การชำระเงิน",checkedValues("payment").join(", ")||"ไม่ระบุ")}
       ${summaryRow("ติดต่อผู้ประกอบการ",contacted)}
       ${summaryRow("ผลการติดต่อ",valueOf("contactOutcome")||"ไม่ระบุ")}
+      ${isParcelCase()?summaryRow("ผู้ให้บริการขนส่ง",shippingCarrierName()||"ไม่ระบุ"):""}
+      ${isParcelCase()?summaryRow("เลขพัสดุ",valueOf("trackingNumber")||"ไม่ระบุ"):""}
+      ${isParcelCase()?summaryRow("ผู้ส่ง/ผู้รับ",valueOf("parcelRole")||"ไม่ระบุ"):""}
+      ${isParcelCase()?summaryRow("เลขเคสบริษัทขนส่ง",valueOf("parcelClaimNumber")||"ไม่ระบุ"):""}
+      ${summaryRow("วันที่ติดต่อ",valueOf("contactDate")?formatThaiDate(valueOf("contactDate")):"ไม่ระบุ")}
       ${summaryRow("ความประสงค์",checkedValues("request").join(", ")||"ไม่ระบุ")}
       ${summaryRow("รายละเอียดความประสงค์",valueOf("requestDetail")||"ไม่ระบุ")}
       ${summaryRow("มูลค่าความเสียหาย",damage)}
@@ -706,6 +834,10 @@ ${valueOf("companyChannel")||"ไม่ระบุ"}
 สถานที่ซื้อหรือใช้บริการ:
 ${checkedValues("place").join(", ")||"ไม่ระบุ"}
 
+${isParcelCase()?`ข้อมูลขนส่ง:
+${parcelCaseFacts().join("\n")||"ไม่ระบุ"}
+`:""}
+
 หมายเหตุ:
 ข้อมูลนี้จัดทำผ่านเครื่องมือช่วยเตรียมข้อมูลคำร้อง โปรดตรวจสอบข้อเท็จจริงก่อนนำไปยื่นต่อหน่วยงาน`}
 function copySummary(){trackEvent("copy_all");copyText(buildCopyText(),"คัดลอกข้อมูลทั้งหมดแล้ว")}
@@ -723,7 +855,7 @@ function restoreDraft(){
     const data=JSON.parse(raw);
     const fields=[
       "name","category","subject","amountPaid","incidentDate","problem","damage",
-      "requestDetail","contactOutcome","company","companyDetail","address",
+      "requestDetail","contactOutcome","contactDate","shippingCarrier","shippingCarrierOther","trackingNumber","parcelRole","parcelClaimNumber","company","companyDetail","address",
       "companyPhone","companyChannel"
     ];
 
@@ -739,6 +871,7 @@ function restoreDraft(){
     restoreAddress(data);
     syncCategoryButtons();
     updateContactFields();
+    updateParcelFields();
 
     const savedStep=Number(data.currentStep);
     showStep(savedStep>=1&&savedStep<=4?savedStep:1);
@@ -756,7 +889,7 @@ function restoreDraft(){
     showToast("ไม่สามารถเปิดแบบร่างได้");
   }
 }
-function restoreAddress(data){if(!data.province)return;document.getElementById("province").value=data.province;provinceChanged(false);if(data.district){document.getElementById("district").value=data.district;districtChanged(false)}if(data.subDistrict){document.getElementById("subDistrict").value=data.subDistrict;subDistrictChanged(false)}}
+function restoreAddress(data){if(!data.province)return;if(!provinces.length){pendingAddressRestore=data;return}pendingAddressRestore=null;document.getElementById("province").value=data.province;provinceChanged(false);if(data.district){document.getElementById("district").value=data.district;districtChanged(false)}if(data.subDistrict){document.getElementById("subDistrict").value=data.subDistrict;subDistrictChanged(false)}}
 function restoreChecks(name,values){if(!Array.isArray(values))return;document.querySelectorAll(`input[name="${name}"]`).forEach(i=>i.checked=values.includes(i.value))}
 function restoreRadio(name,value){if(!value)return;document.querySelectorAll(`input[name="${name}"]`).forEach(i=>i.checked=i.value===value)}
 function enableAutoSave(){
@@ -768,7 +901,7 @@ function enableAutoSave(){
 
   document.querySelectorAll("select").forEach(element=>{
     if(!["province","district","subDistrict"].includes(element.id)){
-      element.addEventListener("change",()=>saveDraft());
+      element.addEventListener("change",()=>{updateParcelFields();saveDraft()});
     }
   });
 }
@@ -800,7 +933,9 @@ async function initializeApp(){
   updateContinueButton();
   syncCategoryButtons();
   updateContactFields();
-  setWizardQuestion(1,false);
+  updateParcelFields();
+  setWizardQuestion(1,false,false);
   await loadThaiAddressData();
+  if(pendingAddressRestore)restoreAddress(pendingAddressRestore);
 }
 initializeApp();
