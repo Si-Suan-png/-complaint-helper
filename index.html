@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Complaint Helper V22: simplified, mobile-first landing page; V21 complaint logic retained -->
+<!-- Complaint Helper V23: improve contextual question headings and mobile radio clarity; core logic retained -->
 <html lang="th">
 <head>
   <meta charset="UTF-8">
@@ -339,9 +339,14 @@
           <p class="parcel-help">เลขพัสดุและชื่อบริษัทจะเก็บไว้กับแบบร่างในเบราว์เซอร์เท่านั้น ไม่ส่งไปที่หน่วยงานอัตโนมัติ</p>
         </div>
 
-        <div class="wizard-radio-grid">
-          <label class="wizard-radio"><input type="radio" name="contactedBusiness" value="ติดต่อแล้ว" onchange="updateContactFields(); saveDraft()">✓ ติดต่อแล้ว</label>
-          <label class="wizard-radio"><input type="radio" name="contactedBusiness" value="ยังไม่ได้ติดต่อ" onchange="updateContactFields(); saveDraft()">○ ยังไม่ได้ติดต่อ</label>
+        <div class="contact-choice-block">
+          <p class="contact-choice-eyebrow">การแจ้งปัญหา</p>
+          <h4 id="contactDecisionTitle">คุณเคยติดต่อร้านหรือบริษัทเรื่องนี้แล้วหรือยัง?</h4>
+          <p class="contact-choice-hint">เลือกคำตอบที่ตรงกับเหตุการณ์ของคุณ</p>
+          <div class="wizard-radio-grid" role="radiogroup" aria-labelledby="contactDecisionTitle">
+            <label class="wizard-radio"><input type="radio" name="contactedBusiness" value="ติดต่อแล้ว" onchange="updateContactFields(); saveDraft()"><span>ติดต่อแล้ว</span></label>
+            <label class="wizard-radio"><input type="radio" name="contactedBusiness" value="ยังไม่ได้ติดต่อ" onchange="updateContactFields(); saveDraft()"><span>ยังไม่ได้ติดต่อ</span></label>
+          </div>
         </div>
 
         <div id="contactOutcomeWrap" class="conditional-field hidden">

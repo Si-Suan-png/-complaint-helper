@@ -7,7 +7,7 @@ const AUTO_SAVE_DELAY=1500;
 const STORAGE_KEY="consumerComplaintProductionV16";
 
 /*
-  VERSION 22 — compact landing design; V21 parcel logic and privacy retained
+  VERSION 23 — clear question context and accessible contact choices; V22 behavior retained
   ------------------------------------
   ระบบนี้ "ไม่ส่งค่าจากฟอร์ม" ไปยัง Analytics
   ส่งได้เฉพาะชื่อ Event ที่อยู่ใน ANALYTICS_EVENTS เท่านั้น
@@ -254,9 +254,11 @@ function updateParcelFields(){
   const claim=document.getElementById("parcelClaimWrap");
   if(claim)claim.classList.toggle("hidden",!parcel||radioValue("contactedBusiness")!=="ติดต่อแล้ว");
   const title=document.getElementById("contactQuestionTitle");
-  if(title)title.textContent=parcel?"คุณเคยติดต่อบริษัทขนส่งแล้วหรือยัง?":"คุณเคยติดต่อร้านหรือบริษัทแล้วหรือยัง?";
+  if(title)title.textContent=parcel?"ข้อมูลพัสดุและการติดต่อบริษัทขนส่ง":"การติดต่อร้านค้าหรือบริษัท";
   const help=document.getElementById("contactQuestionHelp");
-  if(help)help.textContent=parcel?"ระบุผู้ให้บริการ เลขติดตาม และผลการติดต่อ เพื่อให้คำร้องมีข้อมูลอ้างอิง":"ข้อมูลนี้ช่วยให้คำร้องบอกได้ว่าคุณพยายามแก้ปัญหากับผู้ประกอบการมาก่อนหรือไม่";
+  if(help)help.textContent=parcel?"ระบุข้อมูลพัสดุที่ทราบ จากนั้นตอบเรื่องการติดต่อบริษัทด้านล่าง":"บอกว่าคุณเคยแจ้งปัญหากับผู้ประกอบการแล้วหรือยัง เพื่อให้ข้อความร้องเรียนตรงกับข้อเท็จจริง";
+  const decisionTitle=document.getElementById("contactDecisionTitle");
+  if(decisionTitle)decisionTitle.textContent=parcel?"คุณได้แจ้งปัญหากับบริษัทขนส่งแล้วหรือยัง?":"คุณเคยติดต่อร้านหรือบริษัทเรื่องนี้แล้วหรือยัง?";
   const outcome=document.getElementById("contactOutcomeLabel");
   if(outcome)outcome.textContent=parcel?"บริษัทขนส่งตอบว่าอย่างไร?":"ร้าน / บริษัทตอบว่าอย่างไร?";
 }

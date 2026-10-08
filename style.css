@@ -509,3 +509,68 @@ label{display:block;margin:18px 0 7px;color:#c2dde3;font-size:14px}input,select,
   #homePage .hero-actions .primary-button{transition:none}
   #homePage .hero-actions .primary-button:hover{transform:none}
 }
+
+
+/* Version 23: visible question context after the long parcel-details form */
+.contact-choice-block{
+  margin:22px 0 0;
+  padding:20px 18px;
+  border:1px solid rgba(0,234,255,.21);
+  border-radius:12px;
+  background:rgba(0,10,23,.65);
+}
+.contact-choice-eyebrow{
+  margin:0 0 8px;
+  color:var(--cyan);
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.055em;
+}
+.contact-choice-block h4{
+  margin:0;
+  color:var(--white);
+  font-size:clamp(17px,2.4vw,21px);
+  line-height:1.5;
+  font-weight:700;
+}
+.contact-choice-hint{
+  margin:7px 0 18px;
+  color:#a2c4cd;
+  font-size:13px;
+  line-height:1.6;
+}
+.contact-choice-block .wizard-radio-grid{margin-top:0}
+.contact-choice-block .wizard-radio{
+  min-height:60px;
+  margin:0;
+  padding:13px 15px;
+  gap:12px;
+  font-size:15px;
+  line-height:1.5;
+}
+.contact-choice-block .wizard-radio input[type="radio"]{
+  display:block;
+  width:20px;
+  height:20px;
+  min-width:20px;
+  flex:0 0 20px;
+  padding:0;
+  margin:0;
+  border:0;
+  border-radius:50%;
+  box-shadow:none;
+  background:transparent;
+  accent-color:var(--cyan);
+}
+.contact-choice-block .wizard-radio:has(input:checked){
+  border-color:rgba(0,234,255,.72);
+  background:rgba(0,234,255,.08);
+}
+.contact-choice-block .wizard-radio:focus-within{
+  outline:2px solid rgba(0,234,255,.75);
+  outline-offset:2px;
+}
+@media(max-width:760px){
+  .contact-choice-block{margin-top:18px;padding:17px 14px}
+  .contact-choice-block .wizard-radio-grid{grid-template-columns:1fr}
+}
