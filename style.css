@@ -287,3 +287,64 @@ label{display:block;margin:18px 0 7px;color:#c2dde3;font-size:14px}input,select,
   .missing-action button{width:100%}
   .share-actions{grid-template-columns:1fr}
 }
+
+/* Privacy content refresh */
+.privacy-simple-card{
+  max-width:940px;margin:0 auto;padding:clamp(20px,3.4vw,38px);
+  border:1px solid rgba(0,234,255,.26);border-radius:18px;
+  background:linear-gradient(145deg,rgba(5,29,41,.82),rgba(4,15,29,.87));
+  box-shadow:0 16px 48px rgba(0,0,0,.15);
+}
+.privacy-simple-heading{display:flex;align-items:center;gap:16px;margin-bottom:15px}
+.privacy-simple-heading .section-heading{margin:0;font-size:clamp(26px,3.8vw,36px);line-height:1.25}
+.privacy-shield{
+  width:48px;height:48px;flex:0 0 48px;display:grid;place-items:center;
+  border:1px solid rgba(34,255,174,.38);border-radius:14px;
+  background:rgba(34,255,174,.07);color:#8ff8d0;font-size:27px;font-weight:800
+}
+.privacy-section .privacy-simple-card p{color:#c3d9de;line-height:1.85;margin:14px 0}
+.privacy-section .privacy-simple-card strong{color:#e4fcff}
+.privacy-section .privacy-simple-card .privacy-small-note{
+  color:#9db8c1;font-size:14px
+}
+.privacy-read-more{
+  display:inline-flex;align-items:center;gap:9px;margin-top:6px;padding:12px 17px;
+  border:1px solid rgba(0,234,255,.35);border-radius:9px;
+  color:#92f7ff;background:rgba(0,234,255,.055);font-weight:700;text-decoration:none
+}
+.privacy-read-more:hover,.privacy-read-more:focus-visible{
+  border-color:#63f7ff;background:rgba(0,234,255,.1)
+}
+.privacy-section .privacy-simple-card .privacy-government-note{
+  margin:22px 0 0;padding-top:15px;border-top:1px solid rgba(0,234,255,.11);
+  color:#90aeb6;font-size:13px
+}
+.wizard-privacy-note{margin:-5px 0 22px;color:#a7d1d7;font-size:13px;line-height:1.7}
+.wizard-privacy-note a,.faq a,.footer-privacy-link{color:#84eeff;text-underline-offset:3px}
+.footer-privacy-link{display:inline-block;margin-top:11px;font-size:13px}
+.policy-page .top-nav{position:relative;min-height:70px}
+.policy-page .top-nav .brand{text-decoration:none}
+.policy-page .top-nav nav{display:flex;gap:12px}
+.policy-wrap{max-width:910px;margin:0 auto;padding:54px 22px 85px}
+.policy-topline{font-size:12px;letter-spacing:1.6px;color:var(--cyan)}
+.policy-wrap h1{margin:14px 0 12px;color:var(--white);font-size:clamp(33px,5vw,48px);line-height:1.18}
+.policy-lede{font-size:16px;line-height:1.75;color:#b8d2d9}
+.policy-updated{font-size:13px;color:#a2bbc3;margin:19px 0 35px}
+.policy-highlight{border:1px solid rgba(34,255,174,.3);border-radius:14px;padding:21px 24px;background:rgba(34,255,174,.045);margin-bottom:23px;line-height:1.8}
+.policy-highlight strong{color:#9df5ce}
+.policy-card{background:rgba(6,23,36,.88);border:1px solid rgba(0,234,255,.14);border-radius:13px;padding:25px 28px;margin:14px 0}
+.policy-card h2{margin:0 0 13px;color:#dffbff;font-size:20px}
+.policy-card p,.policy-card li{line-height:1.85;color:#bbd2d8}
+.policy-card p{margin:9px 0}
+.policy-card ul{padding-left:22px;margin:12px 0 0}
+.policy-card a{color:#8cf0ff;text-underline-offset:3px}
+.policy-back{display:inline-flex;margin-top:28px;padding:13px 20px;border:1px solid rgba(0,234,255,.25);border-radius:9px;color:var(--cyan);text-decoration:none;background:rgba(0,234,255,.04)}
+.policy-back:hover{background:rgba(0,234,255,.11)}
+@media(max-width:760px){
+  .privacy-simple-heading{align-items:flex-start}
+  .privacy-shield{width:42px;height:42px;flex-basis:42px}
+  .policy-page .top-nav{padding:12px 18px;gap:10px}
+  .policy-page .top-nav .brand{font-size:13px}
+  .policy-wrap{padding:36px 16px 60px}
+  .policy-card{padding:22px 18px}
+}
