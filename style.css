@@ -359,3 +359,153 @@ label{display:block;margin:18px 0 7px;color:#c2dde3;font-size:14px}input,select,
 .parcel-route-note{padding:12px;color:#bedde0;border:1px solid rgba(0,234,255,.16);border-radius:10px;font-size:13px;line-height:1.6}
 .evidence-note{font-size:12px;color:#8eaeb8;line-height:1.6}
 @media(max-width:760px){.parcel-two-cols{grid-template-columns:1fr}.parcel-details{padding:14px}}
+
+
+/* V22 — focused responsive landing; all complaint forms and privacy pages remain unchanged */
+#homePage .top-nav{
+  min-height:68px;
+  padding-inline:clamp(18px,3.4vw,42px);
+  background:rgba(1,10,20,.68);
+  border-bottom:1px solid rgba(0,234,255,.12);
+}
+#homePage .brand{font-size:15px;letter-spacing:.1px}
+#homePage .top-nav nav{gap:clamp(14px,2vw,25px)}
+#homePage .top-nav a{font-size:13px;color:#c0d6db}
+#homePage .hero{
+  min-height:100vh;
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  padding:106px 20px 40px;
+  background-image:linear-gradient(180deg,rgba(0,7,20,.42),rgba(0,7,19,.48) 44%,rgba(0,6,16,.92)),url("IMG_1011.jpeg");
+  background-position:center;
+}
+#homePage .hero-shade{
+  background:radial-gradient(ellipse at 50% 48%,rgba(0,204,255,.07),rgba(0,8,20,.12) 70%);
+  pointer-events:none;
+}
+#homePage .hero-card{
+  width:min(680px,100%);
+  padding:clamp(26px,3.6vw,44px) clamp(22px,4vw,48px);
+  border-radius:20px;
+  border:1px solid rgba(0,234,255,.25);
+  background:rgba(2,15,28,.88);
+  box-shadow:0 18px 65px rgba(0,0,0,.38),0 0 35px rgba(0,234,255,.06);
+  text-align:center;
+}
+#homePage .hero-eyebrow{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin:0 0 18px;color:#99ecf6;font-size:12px;letter-spacing:.3px;
+}
+#homePage .hero-eyebrow-dot{
+  display:inline-block;width:7px;height:7px;flex:0 0 7px;
+  border-radius:50%;background:var(--green);
+  box-shadow:0 0 10px rgba(34,255,174,.4);
+}
+#homePage .hero-card h1{
+  margin:0;
+  font-size:clamp(32px,4.3vw,48px);
+  font-weight:750;
+  line-height:1.24;
+  letter-spacing:-.025em;
+  color:#f2fcff;
+}
+#homePage .hero-promise{
+  margin:8px 0 0;
+  font-size:clamp(25px,3.5vw,39px);
+  font-weight:750;
+  line-height:1.35;
+  letter-spacing:-.02em;
+  color:#30e3f3;
+}
+#homePage .hero-description{
+  max-width:490px;
+  margin:14px auto 0;
+  color:#c6dfe4;
+  font-size:clamp(14px,1.55vw,17px);
+  line-height:1.65;
+}
+#homePage .hero-actions{display:grid;justify-items:center;gap:8px;margin-top:24px}
+#homePage .hero-actions .primary-button,
+#homePage .hero-actions .secondary-button{
+  width:min(335px,100%);
+  margin:0;
+  min-height:52px;
+  padding:12px 20px;
+  border-radius:11px;
+  font-size:16px;
+  font-weight:700;
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+#homePage .hero-actions .primary-button{
+  background:linear-gradient(105deg,#00afd7,#0978f7);
+  box-shadow:0 10px 25px rgba(0,143,241,.23);
+}
+#homePage .hero-actions .primary-button:hover{transform:translateY(-2px);box-shadow:0 13px 30px rgba(0,143,241,.3)}
+#homePage .hero-actions .secondary-button{
+  min-height:42px;
+  color:#abebf0;
+  font-size:13px;
+  font-weight:600;
+  background:rgba(0,234,255,.025);
+}
+#homePage .hero-trust{
+  margin:19px 0 0;
+  color:#b9d2d6;
+  font-size:12px;
+  line-height:1.65;
+}
+#homePage .hero-trust>span:first-child{color:#70edb7;font-weight:700}
+#homePage .hero-note{
+  margin:14px auto 0;
+  padding-top:13px;
+  max-width:505px;
+  border-top:1px solid rgba(255,255,255,.075);
+  color:#91aab3;
+  font-size:11px;
+  line-height:1.6;
+}
+#homePage .hero-scroll{
+  position:relative;
+  z-index:2;
+  color:#c8e3e6;
+  text-decoration:none;
+  font-size:13px;
+  line-height:1.5;
+  border-bottom:1px solid rgba(0,234,255,.25);
+  padding-bottom:4px;
+}
+#homePage .hero-scroll:hover{color:#69ecff}
+#homePage .primary-button:focus-visible,
+#homePage .secondary-button:focus-visible,
+#homePage .hero-scroll:focus-visible{
+  outline:3px solid #91fff4;
+  outline-offset:4px;
+}
+@media(max-width:760px){
+  #homePage .top-nav{min-height:60px}
+  #homePage .hero{padding:86px 15px 28px;gap:17px}
+  #homePage .hero-card{max-width:540px;padding:26px 20px;border-radius:16px}
+  #homePage .hero-eyebrow{margin-bottom:14px;font-size:11px}
+  #homePage .hero-card h1{font-size:clamp(28px,7.4vw,38px);line-height:1.26}
+  #homePage .hero-promise{margin-top:8px;font-size:clamp(24px,6.2vw,32px)}
+  #homePage .hero-description{font-size:14px;margin-top:12px}
+  #homePage .hero-actions{margin-top:19px}
+  #homePage .hero-actions .primary-button{min-height:50px}
+  #homePage .hero-trust{margin-top:16px;font-size:11px}
+  #homePage .hero-note{margin-top:12px;font-size:10.5px}
+}
+@media(max-width:400px){
+  #homePage .hero{padding-inline:12px}
+  #homePage .hero-card{padding:22px 16px}
+  #homePage .hero-card h1{font-size:28px}
+  #homePage .hero-promise{font-size:23px}
+  #homePage .hero-trust{font-size:10.5px}
+}
+@media(prefers-reduced-motion:reduce){
+  #homePage .hero-actions .primary-button{transition:none}
+  #homePage .hero-actions .primary-button:hover{transform:none}
+}

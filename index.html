@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- Complaint Helper V21: parcel guidance and private-by-default drafts -->
+<!-- Complaint Helper V22: simplified, mobile-first landing page; V21 complaint logic retained -->
 <html lang="th">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="เครื่องมือช่วยเตรียมข้อมูลคำร้องผู้บริโภคก่อนยื่นเรื่องจริง">
+  <meta name="description" content="มีปัญหากับร้านค้า ขนส่ง หรือบริการ? เตรียมเรื่องร้องเรียนฟรี ตอบคำถามง่าย ๆ ไม่ต้องสมัครสมาชิก และรับข้อความพร้อมใช้">
   <title>ผู้ช่วยเตรียมคำร้อง</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -22,26 +22,23 @@
     </nav>
   </header>
 
-  <section class="hero">
-    <div class="hero-shade"></div>
-    <div class="system-top">เครื่องมือช่วยผู้บริโภค • พร้อมใช้งาน</div>
+  <section class="hero" aria-labelledby="heroTitle">
+    <div class="hero-shade" aria-hidden="true"></div>
 
     <div class="hero-card">
-      <div class="version">ระบบช่วยเตรียมข้อมูล</div>
-      <h1>มีปัญหากับร้านค้า ขนส่ง หรือบริการ?<span>เราช่วยเตรียมเรื่องร้องเรียน</span></h1>
-      <h2>ตอบคำถามง่าย ๆ แล้วนำข้อความไปใช้ได้ทันที</h2>
-      <p class="hero-text">ฟรี • ไม่ต้องสมัครสมาชิก • ตอบทีละข้อ • สร้างข้อความร้องเรียน • พาไปช่องทางที่เหมาะสม</p>
+      <p class="hero-eyebrow"><span class="hero-eyebrow-dot" aria-hidden="true"></span>ผู้ช่วยร้องเรียนสำหรับคนไทย</p>
+      <h1 id="heroTitle">มีปัญหากับร้านค้า<br>หรือขนส่ง?</h1>
+      <p class="hero-promise">เราช่วยเตรียมเรื่องร้องเรียน</p>
+      <p class="hero-description">ตอบคำถามง่าย ๆ ทีละข้อ แล้วรับข้อความร้องเรียนพร้อมใช้</p>
 
-      <div class="ready"><span></span>ระบบพร้อมใช้งาน</div>
-
-      <button class="primary-button" onclick="startComplaint()">สร้างคำร้องฟรีใน 3 นาที</button>
-      <button id="continueButton" class="secondary-button" onclick="continueDraft()">เปิดแบบร่างล่าสุด</button>
-
-      <p class="hero-note">
-        เว็บไซต์นี้เป็นเครื่องมือช่วยเตรียมข้อมูลก่อนเข้าสู่ระบบราชการ ไม่ใช่เว็บไซต์ของสำนักงานคณะกรรมการคุ้มครองผู้บริโภค (สคบ.)
-        และไม่ได้ส่งคำร้องให้หน่วยงานใดโดยอัตโนมัติ
-      </p>
+      <div class="hero-actions">
+        <button class="primary-button" type="button" onclick="startComplaint()">เริ่มเตรียมคำร้องฟรี <span aria-hidden="true">→</span></button>
+        <button id="continueButton" class="secondary-button hidden" type="button" onclick="continueDraft()">เปิดแบบร่างล่าสุด</button>
+      </div>
+      <p class="hero-trust"><span aria-hidden="true">✓</span> ฟรี <span aria-hidden="true">·</span> ไม่ต้องสมัครสมาชิก <span aria-hidden="true">·</span> แบบร่างอยู่ในเครื่อง</p>
+      <p class="hero-note">เครื่องมืออิสระ ไม่ใช่หน่วยงานรัฐ และไม่ได้ส่งคำร้องแทนผู้ใช้</p>
     </div>
+    <a class="hero-scroll" href="#quickStart">หรือเลือกประเภทปัญหาก่อน <span aria-hidden="true">↓</span></a>
   </section>
 
   <section id="quickStart" class="content-section">

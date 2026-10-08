@@ -7,7 +7,7 @@ const AUTO_SAVE_DELAY=1500;
 const STORAGE_KEY="consumerComplaintProductionV16";
 
 /*
-  VERSION 21 — Thai parcel case guidance + Privacy-first Smart Routing
+  VERSION 22 — compact landing design; V21 parcel logic and privacy retained
   ------------------------------------
   ระบบนี้ "ไม่ส่งค่าจากฟอร์ม" ไปยัง Analytics
   ส่งได้เฉพาะชื่อ Event ที่อยู่ใน ANALYTICS_EVENTS เท่านั้น
@@ -905,7 +905,7 @@ function enableAutoSave(){
     }
   });
 }
-function updateContinueButton(){const b=document.getElementById("continueButton"),hasDraft=Boolean(localStorage.getItem(STORAGE_KEY));b.textContent=hasDraft?"เปิดแบบร่างล่าสุด":"ยังไม่มีแบบร่าง"}
+function updateContinueButton(){const b=document.getElementById("continueButton");if(!b)return;let hasDraft=false;try{hasDraft=Boolean(localStorage.getItem(STORAGE_KEY))}catch(error){console.warn("Cannot read saved draft",error)}b.textContent="เปิดแบบร่างล่าสุด";b.classList.toggle("hidden",!hasDraft);b.disabled=!hasDraft}
 function clearEverything(){if(!confirm("ต้องการล้างข้อมูลแบบร่างทั้งหมดใช่หรือไม่?"))return;clearTimeout(autoSaveTimer);localStorage.removeItem(STORAGE_KEY);location.reload()}
 
 function getShareUrl(){
