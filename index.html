@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Complaint Helper Version 18 -->
 <html lang="th">
 <head>
   <meta charset="UTF-8">
@@ -29,7 +30,7 @@
       <div class="version">ระบบช่วยเตรียมข้อมูล</div>
       <h1>ผู้ช่วย <span>เตรียมคำร้อง</span></h1>
       <h2>เตรียมข้อมูลให้ครบ ก่อนยื่นเรื่องร้องเรียน</h2>
-      <p class="hero-text">จัดข้อมูลปัญหา • ตรวจหลักฐาน • สร้างข้อความร้องเรียน • ไปต่อยังช่องทางราชการ</p>
+      <p class="hero-text">ตอบคำถามทีละข้อ • สร้างข้อความร้องเรียน • ตรวจหลักฐาน • ไปต่อยังช่องทางทางการ</p>
 
       <div class="ready"><span></span>ระบบพร้อมใช้งาน</div>
 
@@ -46,7 +47,7 @@
   <section id="quickStart" class="content-section">
     <div class="section-label">เริ่มด่วน</div>
     <h2 class="section-heading">เลือกปัญหาที่ใกล้เคียงกับคุณ</h2>
-    <p class="section-subtitle">กดหนึ่งครั้ง ระบบจะพาเข้าแบบฟอร์มและเลือกประเภทปัญหาเบื้องต้นให้ทันที</p>
+    <p class="section-subtitle">กดหนึ่งครั้ง ระบบจะเลือกประเภทปัญหาให้ แล้วเริ่มถามทีละข้อทันที</p>
 
     <div class="quick-start-grid">
       <button class="quick-start-card" onclick="startFromProblem('parcel')">
@@ -82,8 +83,8 @@
     <div class="feature-grid">
       <article class="feature-card">
         <div class="feature-number">01</div>
-        <h3>จัดข้อมูลเป็นขั้นตอน</h3>
-        <p>ช่วยรวบรวมเหตุการณ์ ความเสียหาย การชำระเงิน และความต้องการของผู้ร้อง ให้อยู่ในรูปแบบที่ตรวจสอบง่าย</p>
+        <h3>Complaint Wizard</h3>
+        <p>ไม่ต้องเริ่มจากฟอร์มยาว ระบบถามทีละข้อด้วยภาษาง่าย ๆ แล้วนำคำตอบไปประกอบเป็นคำร้องให้</p>
       </article>
 
       <article class="feature-card">
@@ -105,7 +106,7 @@
     <h2 class="section-heading">4 ขั้นตอน</h2>
 
     <div class="process-list">
-      <div class="process-card"><strong>01</strong><div><h3>เล่าปัญหา</h3><p>ระบุเหตุการณ์ วันที่ ความเสียหาย และสิ่งที่ต้องการให้แก้ไข</p></div></div>
+      <div class="process-card"><strong>01</strong><div><h3>ตอบทีละคำถาม</h3><p>เลือกประเภทปัญหา แล้วตอบคำถามสั้น ๆ 7 ข้อ ระบบจะจัดข้อมูลให้เอง</p></div></div>
       <div class="process-card"><strong>02</strong><div><h3>ระบุผู้ถูกร้องเรียน</h3><p>ใส่ชื่อร้าน บริษัท หน่วยงาน ที่อยู่ และช่องทางการติดต่อ</p></div></div>
       <div class="process-card"><strong>03</strong><div><h3>เตรียมหลักฐาน</h3><p>ตรวจไฟล์ใบเสร็จ ภาพถ่าย เอกสาร และหลักฐานอื่น ๆ</p></div></div>
       <div class="process-card"><strong>04</strong><div><h3>ตรวจความพร้อม</h3><p>ดูคะแนนความพร้อม ตรวจข้อมูลที่ขาด และคัดลอกไปใช้ยื่นเรื่องจริง</p></div></div>
@@ -136,6 +137,11 @@
         <summary>ข้อความที่ระบบเรียบเรียงถือเป็นคำแนะนำทางกฎหมายหรือไม่?</summary>
         <p>ไม่ เป็นเพียงตัวช่วยจัดข้อความ ผู้ใช้ควรตรวจสอบข้อเท็จจริงและเนื้อหาก่อนนำไปใช้</p>
       </details>
+
+      <details>
+        <summary>เว็บไซต์เก็บสถิติอะไรบ้าง?</summary>
+        <p>เมื่อเปิดใช้งานระบบสถิติ เว็บไซต์จะเก็บเฉพาะเหตุการณ์การใช้งานทั่วไป เช่น เริ่มทำคำร้อง ไปถึงหน้าผลลัพธ์ คัดลอกข้อความ หรือกดไปยัง สคบ. โดยไม่ส่งชื่อ เบอร์โทร อีเมล ที่อยู่ เนื้อหาคำร้อง จำนวนเงิน ชื่อผู้ถูกร้องเรียน หรือไฟล์หลักฐานไปกับเหตุการณ์สถิติ</p>
+      </details>
     </div>
   </section>
 
@@ -144,6 +150,10 @@
     <h2 class="section-heading">ข้อมูลของคุณอยู่ที่ไหน</h2>
     <p>แบบร่างจะถูกเก็บในพื้นที่จัดเก็บของเบราว์เซอร์บนอุปกรณ์ที่ใช้งาน ไม่ควรใช้เครื่องสาธารณะหรือเครื่องที่มีผู้อื่นใช้งานร่วมกันในการกรอกข้อมูลส่วนบุคคล</p>
     <p>คุณสามารถกด <strong>“ล้างข้อมูลทั้งหมด”</strong> ภายในระบบเพื่อลบแบบร่างจากเบราว์เซอร์ได้</p>
+    <div class="privacy-analytics-note">
+      <strong>สถิติแบบไม่ส่งข้อมูลคำร้อง</strong><br>
+      Version 18 เตรียมระบบวัดการใช้งานแบบ Privacy-first ไว้สำหรับดูจำนวนการเริ่มทำคำร้อง ขั้นที่ผู้ใช้ไปถึง และการกดไปยัง สคบ. ระบบ Event Tracking ถูกออกแบบให้ส่งเฉพาะชื่อเหตุการณ์ที่กำหนดไว้ล่วงหน้า และไม่แนบค่าจากช่องกรอกหรือชื่อไฟล์หลักฐาน เมื่อเปิดใช้งานจะใช้ Umami และเคารพการตั้งค่า Do Not Track ของเบราว์เซอร์
+    </div>
   </section>
 
   <div class="future-ad-slot" aria-hidden="true">พื้นที่โฆษณาในอนาคต</div>
@@ -184,67 +194,165 @@
 
     <section id="step1" class="step active">
       <div class="step-label">ขั้นตอนที่ 01</div>
-      <h2>ข้อมูลเรื่องร้องเรียน</h2>
+      <h2>เล่าปัญหาทีละข้อ</h2>
+      <p class="wizard-intro">ไม่ต้องเขียนแบบฟอร์มยาว ๆ ตอบคำถามสั้น ๆ แล้วระบบจะนำไปสร้างคำร้องให้ในตอนท้าย</p>
 
       <div id="quickStartBadge" class="prefill-badge hidden"></div>
 
-      <label for="name">ชื่อผู้ร้องเรียน *</label>
-      <input id="name" type="text" placeholder="ชื่อ-นามสกุล">
-
-      <label for="category">ประเภทปัญหา *</label>
-      <select id="category">
-        <option value="">-- เลือกประเภทปัญหา --</option>
-        <option value="สินค้าเสียหาย">สินค้าเสียหาย</option>
-        <option value="ปัญหาการขนส่ง">ปัญหาการขนส่ง</option>
-        <option value="ร้านค้าออนไลน์">ร้านค้าออนไลน์</option>
-        <option value="บริการไม่เป็นธรรม">บริการไม่เป็นธรรม</option>
-        <option value="โฆษณาไม่ตรงความจริง">โฆษณาไม่ตรงความจริง</option>
-        <option value="ไม่ได้รับสินค้า">ไม่ได้รับสินค้า</option>
-        <option value="ถูกเรียกเก็บเงินผิด">ถูกเรียกเก็บเงินผิด</option>
-        <option value="อื่น ๆ">อื่น ๆ</option>
-      </select>
-
-      <label for="incidentDate">วันที่เกิดเหตุ</label>
-      <input id="incidentDate" type="date">
-
-      <label for="problem">รายละเอียดเรื่องร้องเรียน *</label>
-      <textarea id="problem" placeholder="เล่าเหตุการณ์ว่าเกิดอะไรขึ้น ตั้งแต่เริ่มจนถึงปัจจุบัน..."></textarea>
-
-      <button class="helper-button" onclick="improveComplaint()">✦ ช่วยเรียบเรียงข้อความ</button>
-      <div class="small-note">ระบบช่วยจัดรูปแบบข้อความเท่านั้น กรุณาตรวจสอบข้อเท็จจริงทุกครั้ง</div>
-
-      <label for="damage">มูลค่าความเสียหาย</label>
-      <div class="money-field">
-        <input id="damage" type="number" min="0" placeholder="เช่น 25000">
-        <span>บาท</span>
+      <div class="wizard-progress-wrap">
+        <div class="wizard-progress-top">
+          <span id="wizardCounter">คำถาม 1 จาก 7</span>
+          <span id="wizardPercent">14%</span>
+        </div>
+        <div class="wizard-track"><div id="wizardBar" class="wizard-bar"></div></div>
       </div>
 
-      <label>การชำระเงิน</label>
-      <div class="option-grid">
-        <label><input type="checkbox" name="payment" value="เงินสด">เงินสด</label>
-        <label><input type="checkbox" name="payment" value="โอนผ่านธนาคาร">โอนผ่านธนาคาร</label>
-        <label><input type="checkbox" name="payment" value="บัตรเครดิต/เดบิต">บัตรเครดิต / เดบิต</label>
-        <label><input type="checkbox" name="payment" value="กระเป๋าเงินอิเล็กทรอนิกส์">กระเป๋าเงินอิเล็กทรอนิกส์</label>
-        <label><input type="checkbox" name="payment" value="เก็บเงินปลายทาง">เก็บเงินปลายทาง</label>
-        <label><input type="checkbox" name="payment" value="อื่น ๆ">อื่น ๆ</label>
-      </div>
+      <input id="category" type="hidden">
 
-      <label>ความประสงค์</label>
-      <div class="option-grid">
-        <label><input type="checkbox" name="request" value="เรียกร้องค่าเสียหาย">เรียกร้องค่าเสียหาย</label>
-        <label><input type="checkbox" name="request" value="ขอเงินคืน">ขอเงินคืน</label>
-        <label><input type="checkbox" name="request" value="ขอเปลี่ยนสินค้า">ขอเปลี่ยนสินค้า</label>
-        <label><input type="checkbox" name="request" value="ตรวจสอบผู้ประกอบการ">ตรวจสอบผู้ประกอบการ</label>
-        <label><input type="checkbox" name="request" value="ตรวจสอบการโฆษณา">ตรวจสอบการโฆษณา</label>
-        <label><input type="checkbox" name="request" value="ขอให้ช่วยไกล่เกลี่ย">ขอให้ช่วยไกล่เกลี่ย</label>
-      </div>
+      <article class="wizard-question active" data-wizard="1">
+        <span class="wizard-kicker">คำถาม 1</span>
+        <h3>ปัญหาของคุณใกล้เคียงกับข้อไหนที่สุด?</h3>
+        <p class="wizard-help">เลือกข้อที่ใกล้เคียงที่สุดก่อน หากไม่แน่ใจเลือก “อื่น ๆ” ได้</p>
 
-      <label for="requestDetail">รายละเอียดความประสงค์เพิ่มเติม</label>
-      <textarea id="requestDetail" placeholder="เช่น ต้องการคืนเงินเต็มจำนวน 25,000 บาท"></textarea>
+        <div class="wizard-choice-grid">
+          <button type="button" class="wizard-choice" data-category="ปัญหาการขนส่ง" onclick="chooseCategory('ปัญหาการขนส่ง', this)">📦 พัสดุเสียหาย</button>
+          <button type="button" class="wizard-choice" data-category="ร้านค้าออนไลน์" onclick="chooseCategory('ร้านค้าออนไลน์', this)">💸 ร้านไม่คืนเงิน</button>
+          <button type="button" class="wizard-choice" data-category="โฆษณาไม่ตรงความจริง" onclick="chooseCategory('โฆษณาไม่ตรงความจริง', this)">🛍️ ของไม่ตรงปก</button>
+          <button type="button" class="wizard-choice" data-category="ไม่ได้รับสินค้า" onclick="chooseCategory('ไม่ได้รับสินค้า', this)">📭 ไม่ได้รับสินค้า</button>
+          <button type="button" class="wizard-choice" data-category="บริการไม่เป็นธรรม" onclick="chooseCategory('บริการไม่เป็นธรรม', this)">🛠️ บริการมีปัญหา</button>
+          <button type="button" class="wizard-choice" data-category="ถูกเรียกเก็บเงินผิด" onclick="chooseCategory('ถูกเรียกเก็บเงินผิด', this)">💳 ถูกเรียกเก็บเงินผิด</button>
+          <button type="button" class="wizard-choice" data-category="สินค้าเสียหาย" onclick="chooseCategory('สินค้าเสียหาย', this)">📦 สินค้าเสียหาย</button>
+          <button type="button" class="wizard-choice" data-category="อื่น ๆ" onclick="chooseCategory('อื่น ๆ', this)">＋ อื่น ๆ</button>
+        </div>
 
-      <div class="navigation right">
-        <button class="next-button" onclick="nextStep(1)">ถัดไป →</button>
-      </div>
+        <div class="wizard-nav wizard-nav-right">
+          <button type="button" class="next-button" onclick="wizardNext(1)">ถัดไป →</button>
+        </div>
+      </article>
+
+      <article class="wizard-question" data-wizard="2">
+        <span class="wizard-kicker">คำถาม 2</span>
+        <h3>คุณซื้อสินค้า หรือใช้บริการอะไร?</h3>
+        <p class="wizard-help">บอกสั้น ๆ ก็ได้ เช่น “กล่องการ์ด Pokémon”, “โทรศัพท์มือถือ”, “บริการซ่อมรถ”</p>
+
+        <label for="subject">สินค้า / บริการ *</label>
+        <input id="subject" type="text" placeholder="เช่น กล่องการ์ด Pokémon">
+
+        <div class="wizard-nav">
+          <button type="button" class="back-button" onclick="wizardBack(2)">← ย้อนกลับ</button>
+          <button type="button" class="next-button" onclick="wizardNext(2)">ถัดไป →</button>
+        </div>
+      </article>
+
+      <article class="wizard-question" data-wizard="3">
+        <span class="wizard-kicker">คำถาม 3</span>
+        <h3>จ่ายไปเท่าไร และจ่ายแบบไหน?</h3>
+        <p class="wizard-help">ถ้าไม่เกี่ยวข้องกับการชำระเงิน สามารถเว้นจำนวนเงินไว้ได้</p>
+
+        <label for="amountPaid">จำนวนเงินที่ชำระ</label>
+        <div class="money-field">
+          <input id="amountPaid" type="number" min="0" step="0.01" placeholder="เช่น 2500">
+          <span>บาท</span>
+        </div>
+
+        <label>วิธีการชำระเงิน</label>
+        <div class="option-grid wizard-options">
+          <label><input type="checkbox" name="payment" value="เงินสด">เงินสด</label>
+          <label><input type="checkbox" name="payment" value="โอนผ่านธนาคาร">โอนผ่านธนาคาร</label>
+          <label><input type="checkbox" name="payment" value="บัตรเครดิต/เดบิต">บัตรเครดิต / เดบิต</label>
+          <label><input type="checkbox" name="payment" value="กระเป๋าเงินอิเล็กทรอนิกส์">กระเป๋าเงินอิเล็กทรอนิกส์</label>
+          <label><input type="checkbox" name="payment" value="เก็บเงินปลายทาง">เก็บเงินปลายทาง</label>
+          <label><input type="checkbox" name="payment" value="อื่น ๆ">อื่น ๆ</label>
+        </div>
+
+        <div class="wizard-nav">
+          <button type="button" class="back-button" onclick="wizardBack(3)">← ย้อนกลับ</button>
+          <button type="button" class="next-button" onclick="wizardNext(3)">ถัดไป →</button>
+        </div>
+      </article>
+
+      <article class="wizard-question" data-wizard="4">
+        <span class="wizard-kicker">คำถาม 4</span>
+        <h3>เกิดอะไรขึ้น?</h3>
+        <p class="wizard-help">เล่าด้วยภาษาของคุณเอง ไม่ต้องใช้ภาษาราชการ ระบบจะนำข้อมูลไปเรียบเรียงให้</p>
+
+        <label for="incidentDate">วันที่เกิดเหตุ</label>
+        <input id="incidentDate" type="date">
+
+        <label for="problem">เล่าเหตุการณ์ *</label>
+        <textarea id="problem" placeholder="เช่น ได้รับพัสดุแล้วพบว่ากล่องเปียก สินค้าภายในบวมและเสียหาย จึงติดต่อบริษัทขนส่ง..."></textarea>
+
+        <div class="wizard-nav">
+          <button type="button" class="back-button" onclick="wizardBack(4)">← ย้อนกลับ</button>
+          <button type="button" class="next-button" onclick="wizardNext(4)">ถัดไป →</button>
+        </div>
+      </article>
+
+      <article class="wizard-question" data-wizard="5">
+        <span class="wizard-kicker">คำถาม 5</span>
+        <h3>คุณเคยติดต่อร้านหรือบริษัทแล้วหรือยัง?</h3>
+        <p class="wizard-help">ข้อมูลนี้ช่วยให้คำร้องบอกได้ว่าคุณพยายามแก้ปัญหากับผู้ประกอบการมาก่อนหรือไม่</p>
+
+        <div class="wizard-radio-grid">
+          <label class="wizard-radio"><input type="radio" name="contactedBusiness" value="ติดต่อแล้ว" onchange="updateContactFields(); saveDraft()">✓ ติดต่อแล้ว</label>
+          <label class="wizard-radio"><input type="radio" name="contactedBusiness" value="ยังไม่ได้ติดต่อ" onchange="updateContactFields(); saveDraft()">○ ยังไม่ได้ติดต่อ</label>
+        </div>
+
+        <div id="contactOutcomeWrap" class="conditional-field hidden">
+          <label for="contactOutcome">ร้าน / บริษัทตอบว่าอย่างไร?</label>
+          <textarea id="contactOutcome" placeholder="เช่น แจ้งว่าจะชดเชยไม่เกิน 2,000 บาท หรือยังไม่ตอบกลับ"></textarea>
+        </div>
+
+        <div class="wizard-nav">
+          <button type="button" class="back-button" onclick="wizardBack(5)">← ย้อนกลับ</button>
+          <button type="button" class="next-button" onclick="wizardNext(5)">ถัดไป →</button>
+        </div>
+      </article>
+
+      <article class="wizard-question" data-wizard="6">
+        <span class="wizard-kicker">คำถาม 6</span>
+        <h3>คุณอยากให้เขาแก้ปัญหาอย่างไร?</h3>
+        <p class="wizard-help">เลือกได้มากกว่า 1 ข้อ แล้วใส่รายละเอียดเพิ่มเติมได้</p>
+
+        <div class="option-grid wizard-options">
+          <label><input type="checkbox" name="request" value="เรียกร้องค่าเสียหาย">เรียกร้องค่าเสียหาย</label>
+          <label><input type="checkbox" name="request" value="ขอเงินคืน">ขอเงินคืน</label>
+          <label><input type="checkbox" name="request" value="ขอเปลี่ยนสินค้า">ขอเปลี่ยนสินค้า</label>
+          <label><input type="checkbox" name="request" value="ตรวจสอบผู้ประกอบการ">ตรวจสอบผู้ประกอบการ</label>
+          <label><input type="checkbox" name="request" value="ตรวจสอบการโฆษณา">ตรวจสอบการโฆษณา</label>
+          <label><input type="checkbox" name="request" value="ขอให้ช่วยไกล่เกลี่ย">ขอให้ช่วยไกล่เกลี่ย</label>
+        </div>
+
+        <label for="requestDetail">รายละเอียดเพิ่มเติม</label>
+        <textarea id="requestDetail" placeholder="เช่น ต้องการให้ชดเชยตามมูลค่าความเสียหายจริง"></textarea>
+
+        <label for="damage">มูลค่าความเสียหายที่ต้องการระบุ</label>
+        <div class="money-field">
+          <input id="damage" type="number" min="0" step="0.01" placeholder="ถ้ามี">
+          <span>บาท</span>
+        </div>
+
+        <div class="wizard-nav">
+          <button type="button" class="back-button" onclick="wizardBack(6)">← ย้อนกลับ</button>
+          <button type="button" class="next-button" onclick="wizardNext(6)">ถัดไป →</button>
+        </div>
+      </article>
+
+      <article class="wizard-question" data-wizard="7">
+        <span class="wizard-kicker">คำถามสุดท้าย</span>
+        <h3>ชื่อผู้ร้องเรียนคืออะไร?</h3>
+        <p class="wizard-help">ใช้สำหรับใส่ในข้อความร้องเรียนที่ระบบสร้างให้เท่านั้น แบบร่างยังคงเก็บในเบราว์เซอร์เครื่องนี้</p>
+
+        <label for="name">ชื่อ-นามสกุล *</label>
+        <input id="name" type="text" placeholder="ชื่อ-นามสกุล">
+
+        <div id="wizardReview" class="wizard-review"></div>
+
+        <div class="wizard-nav">
+          <button type="button" class="back-button" onclick="wizardBack(7)">← ย้อนกลับ</button>
+          <button type="button" class="next-button" onclick="completeWizard()">ไปต่อข้อมูลผู้ถูกร้อง →</button>
+        </div>
+      </article>
     </section>
 
     <section id="step2" class="step">
@@ -359,8 +467,13 @@
           </div>
           <button class="mini-copy-button" onclick="copyGeneratedComplaint()">คัดลอก</button>
         </div>
+        <div class="tone-selector" aria-label="เลือกรูปแบบข้อความ">
+          <button type="button" class="tone-button" data-tone="polite" onclick="setComplaintTone('polite', this)">สุภาพ</button>
+          <button type="button" class="tone-button" data-tone="formal" onclick="setComplaintTone('formal', this)">เป็นทางการ</button>
+          <button type="button" class="tone-button active" data-tone="official" onclick="setComplaintTone('official', this)">ยื่นหน่วยงาน</button>
+        </div>
         <div id="generatedComplaint" class="generated-complaint"></div>
-        <p class="result-note">กรุณาตรวจสอบชื่อ จำนวนเงิน วันที่ และข้อเท็จจริงก่อนนำไปใช้จริง</p>
+        <p class="result-note">ข้อความสร้างจากคำตอบของคุณโดยอัตโนมัติ กรุณาตรวจสอบชื่อ จำนวนเงิน วันที่ และข้อเท็จจริงก่อนนำไปใช้จริง</p>
       </div>
 
       <div class="result-card">
