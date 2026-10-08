@@ -6,7 +6,7 @@ const AUTO_SAVE_DELAY=1500;
 const STORAGE_KEY="consumerComplaintProductionV16";
 
 /*
-  VERSION 18 — Privacy-first analytics + Complaint Wizard
+  VERSION 19 — Privacy-first analytics + Complaint Wizard + Smart Routing
   ------------------------------------
   ระบบนี้ "ไม่ส่งค่าจากฟอร์ม" ไปยัง Analytics
   ส่งได้เฉพาะชื่อ Event ที่อยู่ใน ANALYTICS_EVENTS เท่านั้น
@@ -44,7 +44,16 @@ const ANALYTICS_EVENTS=new Set([
   "wizard_q4_complete",
   "wizard_q5_complete",
   "wizard_q6_complete",
-  "wizard_q7_complete"
+  "wizard_q7_complete",
+  "route_open_ocpb",
+  "route_open_etda",
+  "route_open_nbtc",
+  "route_open_oic",
+  "route_open_bot",
+  "share_line",
+  "share_facebook",
+  "share_copy_link",
+  "go_fill_missing"
 ]);
 
 let analyticsQueue=[];
@@ -441,6 +450,113 @@ function showStep(step){
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function updateProgress(){for(let i=1;i<=4;i++){const item=document.getElementById(`progress${i}`);item.classList.remove("active","completed");if(i===currentStep)item.classList.add("active");if(i<currentStep)item.classList.add("completed")}}
+
+const AGENCIES={
+  ocpb:{
+    name:"สำนักงานคณะกรรมการคุ้มครองผู้บริโภค (สคบ.)",
+    short:"สคบ.",
+    url:"https://complaint.ocpb.go.th/",
+    reason:"เหมาะกับข้อพิพาทผู้บริโภคทั่วไปเกี่ยวกับสินค้า บริการ ผู้ประกอบการ และการเยียวยาผู้บริโภค",
+    event:"route_open_ocpb"
+  },
+  etda:{
+    name:"1212 ETDA",
+    short:"1212 ETDA",
+    url:"https://1212.etda.or.th/ComplainFlow/Services",
+    reason:"เหมาะกับปัญหาซื้อขายออนไลน์ เว็บไซต์ผิดกฎหมาย ภัยออนไลน์ และปัญหาดิจิทัลบางประเภท",
+    event:"route_open_etda"
+  },
+  nbtc:{
+    name:"สำนักงาน กสทช. — คุ้มครองผู้บริโภคด้านโทรคมนาคม",
+    short:"กสทช.",
+    url:"https://tcp.nbtc.go.th/th/complaint/complaint-nbtc.aspx",
+    reason:"เหมาะกับปัญหาผู้ให้บริการโทรศัพท์มือถือ อินเทอร์เน็ต และบริการโทรคมนาคม",
+    event:"route_open_nbtc"
+  },
+  oic:{
+    name:"สำนักงาน คปภ. — ระบบรับเรื่องร้องเรียนด้านประกันภัย",
+    short:"คปภ.",
+    url:"https://complaintportal.oic.or.th/",
+    reason:"เหมาะกับข้อพิพาทหรือปัญหาที่เกี่ยวข้องกับบริษัทประกันภัย ตัวแทน นายหน้า หรือการเคลมประกัน",
+    event:"route_open_oic"
+  },
+  bot:{
+    name:"ธนาคารแห่งประเทศไทย — บริการช่วยเหลือ/ร้องเรียน",
+    short:"ธปท.",
+    url:"https://services.bot.or.th/",
+    reason:"เหมาะกับปัญหาการใช้บริการทางการเงิน สถาบันการเงิน การชำระเงิน หรือการให้บริการทางการเงินที่ไม่เป็นธรรม",
+    event:"route_open_bot"
+  }
+};
+
+function getRoutingRecommendation(){
+  const category=valueOf("category");
+  const subject=(valueOf("subject")+" "+valueOf("problem")).toLowerCase();
+
+  if(category==="โทรศัพท์หรืออินเทอร์เน็ต")return {primary:"nbtc",secondary:["ocpb"]};
+  if(category==="ประกันภัย")return {primary:"oic",secondary:["ocpb"]};
+  if(category==="ธนาคารหรือการเงิน")return {primary:"bot",secondary:["ocpb"]};
+  if(["ร้านค้าออนไลน์","ไม่ได้รับสินค้า","โฆษณาไม่ตรงความจริง"].includes(category)){
+    return {primary:"etda",secondary:["ocpb"]};
+  }
+
+  const telecomWords=["มือถือ","โทรศัพท์","อินเทอร์เน็ต","เน็ตบ้าน","ซิม","เครือข่าย"];
+  const insuranceWords=["ประกัน","เคลม","กรมธรรม์","ประกันภัย"];
+  const financeWords=["ธนาคาร","บัตรเครดิต","สินเชื่อ","บัญชี","การเงิน","โอนเงิน","payment"];
+
+  if(telecomWords.some(word=>subject.includes(word)))return {primary:"nbtc",secondary:["ocpb"]};
+  if(insuranceWords.some(word=>subject.includes(word)))return {primary:"oic",secondary:["ocpb"]};
+  if(financeWords.some(word=>subject.includes(word)))return {primary:"bot",secondary:["ocpb"]};
+
+  return {primary:"ocpb",secondary:[]};
+}
+
+function openAgency(key){
+  const agency=AGENCIES[key];
+  if(!agency)return;
+  trackEvent(agency.event);
+  window.open(agency.url,"_blank","noopener");
+}
+
+function renderRouting(){
+  const box=document.getElementById("routingResult");
+  if(!box)return;
+
+  const route=getRoutingRecommendation();
+  const primary=AGENCIES[route.primary];
+  const secondary=route.secondary.map(key=>({key,...AGENCIES[key]}));
+
+  let html=`
+    <div class="route-primary">
+      <span class="route-badge">แนะนำเป็นช่องทางหลัก</span>
+      <div class="route-title">🎯 ${escapeHTML(primary.name)}</div>
+      <p class="route-reason">${escapeHTML(primary.reason)}</p>
+      <button type="button" class="ocpb-button route-button" onclick="openAgency('${route.primary}')">ไปเว็บไซต์ทางการของ ${escapeHTML(primary.short)} →</button>
+    </div>`;
+
+  secondary.forEach(item=>{
+    html+=`
+      <div class="route-secondary">
+        <span class="route-badge">ทางเลือกเพิ่มเติม</span>
+        <div class="route-title">${escapeHTML(item.name)}</div>
+        <p class="route-reason">${escapeHTML(item.reason)}</p>
+        <button type="button" class="secondary-action-button route-button" onclick="openAgency('${item.key}')">ดูช่องทาง ${escapeHTML(item.short)} →</button>
+      </div>`;
+  });
+
+  box.innerHTML=html;
+}
+
+function renderNextSteps(){
+  const box=document.getElementById("nextSteps");
+  if(!box)return;
+  box.innerHTML=`
+    <div class="next-step-item"><div class="next-step-number">1</div><div><strong>ตรวจข้อความและหลักฐาน</strong><br><span class="muted">เช็กชื่อ วันที่ จำนวนเงิน และข้อเท็จจริงก่อนส่ง</span></div></div>
+    <div class="next-step-item"><div class="next-step-number">2</div><div><strong>ติดต่อผู้ประกอบการก่อน ถ้าเหมาะสม</strong><br><span class="muted">เก็บแชต อีเมล เลขอ้างอิง หรือหลักฐานการติดต่อไว้</span></div></div>
+    <div class="next-step-item"><div class="next-step-number">3</div><div><strong>ยื่นผ่านช่องทางทางการที่แนะนำ</strong><br><span class="muted">ตรวจเงื่อนไขและขอบเขตอำนาจของหน่วยงานก่อนยื่น</span></div></div>
+    <div class="next-step-item"><div class="next-step-number">4</div><div><strong>เก็บเลขรับเรื่องและวันที่ยื่น</strong><br><span class="muted">ใช้สำหรับติดตามความคืบหน้าภายหลัง</span></div></div>`;
+}
+
 function calculateReadiness(){
   const files=getSelectedFiles();
   const paymentRelevant=Boolean(valueOf("amountPaid"));
@@ -459,7 +575,67 @@ function calculateReadiness(){
   const passed=checks.filter(i=>i.passed).length;
   return{score:Math.round((passed/checks.length)*100),checks}
 }
-function createFinalReview(){const result=calculateReadiness();document.getElementById("readinessScore").textContent=`${result.score}%`;document.getElementById("scoreBar").style.width=`${result.score}%`;document.getElementById("readinessStatus").textContent=result.score>=90?"พร้อมมาก":result.score>=70?"เกือบพร้อม":result.score>=50?"ควรตรวจเพิ่ม":"ข้อมูลยังไม่ครบ";document.getElementById("readinessChecklist").innerHTML=result.checks.map(i=>`<div class="check-item ${i.passed?"ok":"missing"}">${i.passed?"✓":"!"} ${escapeHTML(i.name)}</div>`).join("");const evidence=getEvidenceRecommendations();document.getElementById("evidenceChecklist").innerHTML=`<h4>หลักฐานที่ควรมี</h4>${evidence.map(i=>`<div class="evidence-item ${i.passed?"ok":"missing"}">${i.passed?"✓ มีแล้ว":"• ควรเพิ่ม"} — ${escapeHTML(i.label)}</div>`).join("")}`;const missing=result.checks.filter(i=>!i.passed),w=document.getElementById("missingWarning");if(missing.length){w.classList.add("show");w.innerHTML=`<strong>ก่อนนำไปยื่น แนะนำให้ตรวจเพิ่ม</strong><br><br>${missing.map(i=>`• ${escapeHTML(i.name)}`).join("<br>")}`}else{w.classList.remove("show");w.innerHTML=""}document.getElementById("generatedComplaint").textContent=buildGeneratedComplaint(currentComplaintTone);createSummary()}
+function createFinalReview(){
+  const result=calculateReadiness();
+  document.getElementById("readinessScore").textContent=`${result.score}%`;
+  document.getElementById("scoreBar").style.width=`${result.score}%`;
+  document.getElementById("readinessStatus").textContent=result.score>=90?"พร้อมมาก":result.score>=70?"เกือบพร้อม":result.score>=50?"ควรตรวจเพิ่ม":"ข้อมูลยังไม่ครบ";
+  document.getElementById("readinessChecklist").innerHTML=result.checks.map(i=>`<div class="check-item ${i.passed?"ok":"missing"}">${i.passed?"✓":"!"} ${escapeHTML(i.name)}</div>`).join("");
+
+  const evidence=getEvidenceRecommendations();
+  document.getElementById("evidenceChecklist").innerHTML=`<h4>หลักฐานที่ควรมี</h4>${evidence.map(i=>`<div class="evidence-item ${i.passed?"ok":"missing"}">${i.passed?"✓ มีแล้ว":"• ควรเพิ่ม"} — ${escapeHTML(i.label)}</div>`).join("")}`;
+
+  const missing=result.checks.filter(i=>!i.passed);
+  const warning=document.getElementById("missingWarning");
+  const action=document.getElementById("missingAction");
+  const actionText=document.getElementById("missingActionText");
+
+  if(missing.length){
+    warning.classList.add("show");
+    warning.innerHTML=`<strong>ยังขาด ${missing.length} รายการ</strong><br><br>${missing.map(i=>`• ${escapeHTML(i.name)}`).join("<br>")}`;
+    action.classList.remove("hidden");
+    actionText.textContent=`ควรเติมก่อนยื่น: ${missing.slice(0,3).map(i=>i.name).join(", ")}${missing.length>3?" และรายการอื่น ๆ":""}`;
+  }else{
+    warning.classList.remove("show");
+    warning.innerHTML="";
+    action.classList.add("hidden");
+  }
+
+  document.getElementById("generatedComplaint").textContent=buildGeneratedComplaint(currentComplaintTone);
+  createSummary();
+  renderRouting();
+  renderNextSteps();
+}
+
+function getFirstMissingTarget(){
+  const result=calculateReadiness();
+  const missing=result.checks.find(i=>!i.passed);
+  if(!missing)return null;
+
+  const map={
+    "ชื่อผู้ร้องเรียน":{step:1,wizard:7},
+    "ประเภทปัญหา":{step:1,wizard:1},
+    "สินค้า / บริการ":{step:1,wizard:2},
+    "รายละเอียดเหตุการณ์":{step:1,wizard:4},
+    "วันที่เกิดเหตุ":{step:1,wizard:4},
+    "ความประสงค์":{step:1,wizard:6},
+    "สถานะการติดต่อผู้ประกอบการ":{step:1,wizard:5},
+    "ชื่อผู้ถูกร้องเรียน":{step:2},
+    "วิธีการชำระเงิน":{step:1,wizard:3},
+    "จำนวนเงิน / การชำระเงิน (ถ้าเกี่ยวข้อง)":{step:1,wizard:3},
+    "หลักฐานประกอบ":{step:3}
+  };
+  return map[missing.name]||{step:1,wizard:1};
+}
+
+function goToFirstMissing(){
+  trackEvent("go_fill_missing");
+  const target=getFirstMissingTarget();
+  if(!target){showToast("ข้อมูลหลักครบแล้ว");return}
+  showStep(target.step);
+  if(target.step===1&&target.wizard)setWizardQuestion(target.wizard);
+}
+
 function createSummary(){
   const files=getSelectedFiles();
   const fileText=files.length?files.map(i=>`${i.type}: ${i.name}`).join("\n"):"ยังไม่ได้เลือกไฟล์";
@@ -533,7 +709,7 @@ ${checkedValues("place").join(", ")||"ไม่ระบุ"}
 หมายเหตุ:
 ข้อมูลนี้จัดทำผ่านเครื่องมือช่วยเตรียมข้อมูลคำร้อง โปรดตรวจสอบข้อเท็จจริงก่อนนำไปยื่นต่อหน่วยงาน`}
 function copySummary(){trackEvent("copy_all");copyText(buildCopyText(),"คัดลอกข้อมูลทั้งหมดแล้ว")}
-function openOCPB(){trackEvent("open_ocpb");window.open("https://complaint.ocpb.go.th","_blank","noopener")}
+function openOCPB(){openAgency("ocpb")}
 function restoreDraft(){
   const raw=localStorage.getItem(STORAGE_KEY);
   if(!raw){
@@ -598,6 +774,25 @@ function enableAutoSave(){
 }
 function updateContinueButton(){const b=document.getElementById("continueButton"),hasDraft=Boolean(localStorage.getItem(STORAGE_KEY));b.textContent=hasDraft?"เปิดแบบร่างล่าสุด":"ยังไม่มีแบบร่าง"}
 function clearEverything(){if(!confirm("ต้องการล้างข้อมูลแบบร่างทั้งหมดใช่หรือไม่?"))return;clearTimeout(autoSaveTimer);localStorage.removeItem(STORAGE_KEY);location.reload()}
+
+function getShareUrl(){
+  return "https://si-suan-png.github.io/complaint-helper/";
+}
+function shareToLine(){
+  trackEvent("share_line");
+  const url=encodeURIComponent(getShareUrl());
+  window.open(`https://social-plugins.line.me/lineit/share?url=${url}`,"_blank","noopener");
+}
+function shareToFacebook(){
+  trackEvent("share_facebook");
+  const url=encodeURIComponent(getShareUrl());
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`,"_blank","noopener");
+}
+async function copySiteLink(){
+  trackEvent("share_copy_link");
+  await copyText(getShareUrl(),"คัดลอกลิงก์เว็บไซต์แล้ว");
+}
+
 async function initializeApp(){
   initializeAnalytics();
   createUploadFields();

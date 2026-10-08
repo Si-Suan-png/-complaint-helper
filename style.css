@@ -226,3 +226,64 @@ label{display:block;margin:18px 0 7px;color:#c2dde3;font-size:14px}input,select,
   .tone-selector{display:grid;grid-template-columns:1fr 1fr 1fr}
   .tone-button{width:100%;padding:10px 6px;font-size:12px}
 }
+
+
+/* Version 19: Smart Routing + actionable missing data + sharing */
+.missing-action{
+  margin:14px 0 18px;
+  padding:16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  border:1px solid rgba(255,190,92,.24);
+  border-radius:12px;
+  background:rgba(255,174,45,.055);
+}
+.missing-action p{margin:5px 0 0;color:var(--muted);line-height:1.55}
+.routing-card{border-color:rgba(34,255,174,.18)}
+.routing-disclaimer{color:var(--muted);line-height:1.65}
+.routing-result{margin-top:16px;display:grid;gap:12px}
+.route-primary,.route-secondary{
+  padding:16px;border-radius:12px;border:1px solid rgba(0,234,255,.13);
+  background:rgba(0,234,255,.025)
+}
+.route-primary{
+  border-color:rgba(34,255,174,.26);
+  background:rgba(34,255,174,.045)
+}
+.route-badge{
+  display:inline-flex;margin-bottom:8px;padding:4px 8px;border-radius:999px;
+  font-size:10px;letter-spacing:.8px;color:#9ff7ef;
+  border:1px solid rgba(34,255,174,.22);background:rgba(34,255,174,.06)
+}
+.route-secondary .route-badge{
+  color:#b9d9df;border-color:rgba(0,234,255,.16);background:rgba(0,234,255,.04)
+}
+.route-title{margin:0 0 5px;color:white;font-weight:700}
+.route-reason{margin:0 0 12px;color:var(--muted);line-height:1.6}
+.route-button{width:100%;margin-top:4px}
+.next-steps{display:grid;gap:10px;margin:12px 0 16px}
+.next-step-item{
+  display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;
+  padding:12px;border:1px solid rgba(0,234,255,.1);border-radius:10px;
+  background:rgba(0,234,255,.02)
+}
+.next-step-number{
+  width:28px;height:28px;display:grid;place-items:center;border-radius:50%;
+  background:rgba(0,234,255,.08);color:var(--cyan);font-size:12px;font-weight:700
+}
+.share-card{text-align:center}
+.share-actions{margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.share-button{
+  min-height:44px;border-radius:10px;border:1px solid rgba(0,234,255,.16);
+  background:rgba(0,234,255,.035);color:#dffaff
+}
+.share-button:hover{border-color:rgba(0,234,255,.42)}
+.line-share{border-color:rgba(34,255,174,.24)}
+.facebook-share{border-color:rgba(120,165,255,.28)}
+@media(max-width:760px){
+  .missing-action{align-items:stretch;flex-direction:column}
+  .missing-action button{width:100%}
+  .share-actions{grid-template-columns:1fr}
+}

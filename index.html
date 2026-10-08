@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Complaint Helper Version 18 -->
+<!-- Complaint Helper Version 19 -->
 <html lang="th">
 <head>
   <meta charset="UTF-8">
@@ -30,7 +30,7 @@
       <div class="version">ระบบช่วยเตรียมข้อมูล</div>
       <h1>ผู้ช่วย <span>เตรียมคำร้อง</span></h1>
       <h2>เตรียมข้อมูลให้ครบ ก่อนยื่นเรื่องร้องเรียน</h2>
-      <p class="hero-text">ตอบคำถามทีละข้อ • สร้างข้อความร้องเรียน • ตรวจหลักฐาน • ไปต่อยังช่องทางทางการ</p>
+      <p class="hero-text">ฟรี • ไม่ต้องสมัครสมาชิก • ตอบทีละข้อ • สร้างข้อความร้องเรียน • พาไปช่องทางที่เหมาะสม</p>
 
       <div class="ready"><span></span>ระบบพร้อมใช้งาน</div>
 
@@ -152,7 +152,7 @@
     <p>คุณสามารถกด <strong>“ล้างข้อมูลทั้งหมด”</strong> ภายในระบบเพื่อลบแบบร่างจากเบราว์เซอร์ได้</p>
     <div class="privacy-analytics-note">
       <strong>สถิติแบบไม่ส่งข้อมูลคำร้อง</strong><br>
-      Version 18 เตรียมระบบวัดการใช้งานแบบ Privacy-first ไว้สำหรับดูจำนวนการเริ่มทำคำร้อง ขั้นที่ผู้ใช้ไปถึง และการกดไปยัง สคบ. ระบบ Event Tracking ถูกออกแบบให้ส่งเฉพาะชื่อเหตุการณ์ที่กำหนดไว้ล่วงหน้า และไม่แนบค่าจากช่องกรอกหรือชื่อไฟล์หลักฐาน เมื่อเปิดใช้งานจะใช้ Umami และเคารพการตั้งค่า Do Not Track ของเบราว์เซอร์
+      Version 19 เตรียมระบบวัดการใช้งานแบบ Privacy-first ไว้สำหรับดูจำนวนการเริ่มทำคำร้อง ขั้นที่ผู้ใช้ไปถึง และการกดไปยัง สคบ. ระบบ Event Tracking ถูกออกแบบให้ส่งเฉพาะชื่อเหตุการณ์ที่กำหนดไว้ล่วงหน้า และไม่แนบค่าจากช่องกรอกหรือชื่อไฟล์หลักฐาน เมื่อเปิดใช้งานจะใช้ Umami และเคารพการตั้งค่า Do Not Track ของเบราว์เซอร์
     </div>
   </section>
 
@@ -222,6 +222,9 @@
           <button type="button" class="wizard-choice" data-category="บริการไม่เป็นธรรม" onclick="chooseCategory('บริการไม่เป็นธรรม', this)">🛠️ บริการมีปัญหา</button>
           <button type="button" class="wizard-choice" data-category="ถูกเรียกเก็บเงินผิด" onclick="chooseCategory('ถูกเรียกเก็บเงินผิด', this)">💳 ถูกเรียกเก็บเงินผิด</button>
           <button type="button" class="wizard-choice" data-category="สินค้าเสียหาย" onclick="chooseCategory('สินค้าเสียหาย', this)">📦 สินค้าเสียหาย</button>
+          <button type="button" class="wizard-choice" data-category="โทรศัพท์หรืออินเทอร์เน็ต" onclick="chooseCategory('โทรศัพท์หรืออินเทอร์เน็ต', this)">📱 โทรศัพท์ / อินเทอร์เน็ต</button>
+          <button type="button" class="wizard-choice" data-category="ประกันภัย" onclick="chooseCategory('ประกันภัย', this)">🛡️ ประกันภัย</button>
+          <button type="button" class="wizard-choice" data-category="ธนาคารหรือการเงิน" onclick="chooseCategory('ธนาคารหรือการเงิน', this)">🏦 ธนาคาร / การเงิน</button>
           <button type="button" class="wizard-choice" data-category="อื่น ๆ" onclick="chooseCategory('อื่น ๆ', this)">＋ อื่น ๆ</button>
         </div>
 
@@ -484,14 +487,38 @@
       </div>
 
       <div id="missingWarning" class="missing-warning"></div>
+      <div id="missingAction" class="missing-action hidden">
+        <div>
+          <strong>ยังขาดข้อมูลบางส่วน</strong>
+          <p id="missingActionText">เติมข้อมูลที่ขาดเพื่อให้คำร้องชัดขึ้น</p>
+        </div>
+        <button type="button" class="secondary-action-button" onclick="goToFirstMissing()">กลับไปเติมข้อมูลที่ขาด →</button>
+      </div>
       <div id="summaryBox"></div>
+
+      <div class="result-card routing-card">
+        <span class="result-kicker">SMART ROUTING</span>
+        <h3>เคสนี้ควรเริ่มที่ไหน?</h3>
+        <p class="routing-disclaimer">คำแนะนำนี้เป็นการคัดกรองเบื้องต้นจากประเภทปัญหาที่คุณเลือก ไม่ใช่การวินิจฉัยทางกฎหมาย และควรตรวจสอบขอบเขตอำนาจของหน่วยงานก่อนยื่นจริง</p>
+        <div id="routingResult" class="routing-result"></div>
+      </div>
 
       <div class="result-card next-step-card">
         <span class="result-kicker">ขั้นตอนถัดไป</span>
-        <h3>นำข้อมูลไปยื่นเรื่องกับหน่วยงานที่เกี่ยวข้อง</h3>
-        <p>เวอร์ชันนี้ใช้ระบบร้องทุกข์ของ สคบ. เป็นช่องทางหลัก ระบบของเราไม่ส่งข้อมูลแทนคุณ</p>
-        <button class="ocpb-button" onclick="openOCPB()">ไปยื่นเรื่องกับ สคบ. →</button>
+        <h3>แล้วต้องทำอะไรต่อ?</h3>
+        <div id="nextSteps" class="next-steps"></div>
         <button class="copy-all-button" onclick="copySummary()">คัดลอกข้อมูลทั้งหมด</button>
+      </div>
+
+      <div class="result-card share-card">
+        <span class="result-kicker">SHARE</span>
+        <h3>เว็บนี้ช่วยคุณได้ไหม?</h3>
+        <p>ส่งให้เพื่อนหรือคนในครอบครัวที่กำลังมีปัญหากับร้านค้า ขนส่ง หรือบริการได้เลย</p>
+        <div class="share-actions">
+          <button type="button" class="share-button line-share" onclick="shareToLine()">LINE</button>
+          <button type="button" class="share-button facebook-share" onclick="shareToFacebook()">Facebook</button>
+          <button type="button" class="share-button" onclick="copySiteLink()">คัดลอกลิงก์</button>
+        </div>
       </div>
 
       <button class="save-button" onclick="saveDraft(true)">บันทึกแบบร่าง</button>
