@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- Complaint Helper V24.1: clearer follow-up assistant; previous tools preserved -->
+<!-- Complaint Helper V25: visible complaint topics and official channels; existing tools preserved -->
 <html lang="th">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="มีปัญหาไม่รู้จะเริ่มตรงไหน? ค้นหาช่องทางร้องเรียน เตรียมหนังสือ และสร้างข้อความติดตามเรื่อง ฟรี ไม่ต้องสมัครสมาชิก">
+  <meta name="description" content="มีปัญหาเรื่องเงิน งาน หอพัก ขนส่ง หรือร้านค้า? เลือกปัญหา ดูขั้นตอนและช่องทางหน่วยงานที่เกี่ยวข้อง ฟรี ไม่ต้องสมัครสมาชิก">
   <title>ช่วยเริ่มแก้ปัญหา | Complaint Helper</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -17,7 +17,7 @@
     <div class="brand">Complaint Helper <span class="brand-thai">ผู้ช่วยแก้ปัญหา</span></div>
     <nav>
       <a href="#services">เริ่มใช้งาน</a>
-      <a href="#quickStart">ประเภทปัญหา</a>
+      <a href="#quickStart">20 ปัญหาที่พบบ่อย</a>
       <a href="#privacy">ความเป็นส่วนตัว</a>
     </nav>
   </header>
@@ -31,7 +31,7 @@
       <div class="service-paths" aria-label="เลือกสิ่งที่ต้องการความช่วยเหลือ">
         <button type="button" class="service-path service-path-primary" onclick="openAgencyFinder()">
           <span class="service-path-icon" aria-hidden="true">🧭</span>
-          <span class="service-path-content"><strong>ไม่รู้จะร้องเรียนที่ไหน</strong><small>เลือกปัญหา → ดูหน่วยงานที่ควรเริ่มติดต่อ</small></span>
+          <span class="service-path-content"><strong>ไม่รู้จะร้องเรียนที่ไหน</strong><small>เลือกจาก 20 ปัญหา → ดูช่องทางที่อาจเกี่ยวข้อง</small></span>
           <span class="service-path-arrow" aria-hidden="true">→</span>
         </button>
         <button type="button" class="service-path" onclick="startComplaint()">
@@ -61,22 +61,31 @@
 
     <section id="agencyTool" class="tool-panel hidden" aria-labelledby="agencyToolTitle">
       <h2 id="agencyToolTitle">🧭 ไม่รู้จะร้องเรียนที่ไหน?</h2>
-      <p class="tool-lede">เริ่มจากเลือกประเภทปัญหา ระบบจะแสดงช่องทางที่อาจเกี่ยวข้อง โดยยังไม่ต้องกรอกชื่อหรือข้อมูลส่วนตัว</p>
+      <p class="tool-lede">เริ่มจากเลือกประเภทปัญหา ระบบจะแสดงขั้นตอน หลักฐาน และช่องทางที่อาจเกี่ยวข้อง โดยไม่ต้องกรอกชื่อหรือข้อมูลส่วนตัว</p>
       <label for="agencyIssue">ปัญหาของคุณเกี่ยวกับเรื่องใด?</label>
       <select id="agencyIssue" onchange="renderAgencyFinder()">
         <option value="">-- เลือกประเภทปัญหา --</option>
-        <option value="online">ซื้อของออนไลน์ / ไม่ได้รับสินค้า</option>
-        <option value="consumer">ร้านค้าไม่คืนเงิน / บริการไม่เป็นธรรม</option>
-        <option value="post">ไปรษณีย์ไทย / EMS พัสดุเสียหาย</option>
-        <option value="otherParcel">พัสดุเสียหายจากขนส่งอื่น</option>
+        <option value="online">ซื้อของออนไลน์แล้วไม่ได้รับสินค้า</option>
+        <option value="refund">ร้านค้าไม่คืนเงิน</option>
+        <option value="mismatch">สินค้าไม่ตรงปก / โฆษณาไม่ตรงจริง</option>
+        <option value="consumer">บริการไม่เป็นธรรม / ร้านค้าเอาเปรียบ</option>
+        <option value="post">พัสดุไปรษณีย์ไทย/EMS เสียหาย</option>
+        <option value="otherParcel">พัสดุขนส่งเอกชนเสียหาย</option>
+        <option value="fraud">ถูกหลอกโอนเงิน (เร่งด่วน)</option>
+        <option value="housing">หอพักไม่คืนเงินมัดจำ</option>
+        <option value="lease">มีปัญหาสัญญาเช่า / เจ้าของหอเอาเปรียบ</option>
+        <option value="labor">นายจ้างไม่จ่ายเงินเดือน</option>
+        <option value="overtime">ไม่ได้รับค่าล่วงเวลา</option>
+        <option value="dismissal">ถูกเลิกจ้าง / ค่าชดเชย</option>
+        <option value="insurance">บริษัทประกันไม่จ่ายค่าสินไหม</option>
+        <option value="finance">ธนาคาร / สินเชื่อ / บัตรเครดิต</option>
+        <option value="debtcollect">ถูกทวงหนี้ไม่เป็นธรรม</option>
+        <option value="loan">ให้ยืมเงินแล้วไม่คืน</option>
         <option value="telecom">โทรศัพท์ / อินเทอร์เน็ต</option>
-        <option value="insurance">ประกันภัย / เคลมประกัน</option>
-        <option value="finance">ธนาคาร / บริการทางการเงิน</option>
-        <option value="government">เรื่องร้องทุกข์เกี่ยวกับหน่วยงานรัฐ</option>
-        <option value="fraud">ถูกหลอกโอนเงิน / สงสัยมิจฉาชีพ (เร่งด่วน)</option>
-        <option value="labor">นายจ้างค้างเงินเดือน / ปัญหาแรงงาน</option>
-        <option value="housing">หอพัก / สัญญาเช่า / เงินประกัน</option>
-        <option value="other">ปัญหาอื่น ๆ / ยังไม่แน่ใจ</option>
+        <option value="publicTransport">รถโดยสาร / แท็กซี่ / รถรับจ้างสาธารณะ</option>
+        <option value="nhso">ปัญหาสิทธิบัตรทอง</option>
+        <option value="government">ร้องทุกข์เรื่องบริการภาครัฐ</option>
+        <option value="other">ไม่แน่ใจว่าควรติดต่อที่ไหน</option>
       </select>
       <div id="agencyFinderResult" class="tool-result" aria-live="polite">
         <p class="tool-empty">เลือกปัญหาด้านบน เพื่อดูทางเริ่มต้นที่เหมาะสม</p>
@@ -139,38 +148,57 @@
     </section>
   </section>
 
-  <section id="quickStart" class="content-section">
-    <div class="section-label">เริ่มด่วน</div>
-    <h2 class="section-heading">เลือกปัญหาที่ใกล้เคียงกับคุณ</h2>
-    <p class="section-subtitle">กดหนึ่งครั้ง ระบบจะเลือกประเภทปัญหาให้ แล้วเริ่มถามทีละข้อทันที</p>
-
-    <div class="quick-start-grid">
-      <button class="quick-start-card" onclick="startFromProblem('parcel')">
-        <span class="quick-icon">📦</span>
-        <strong>พัสดุเสียหาย</strong>
-        <small>ของเปียก แตก สูญหาย หรือเสียหายจากการขนส่ง</small>
-      </button>
-
-      <button class="quick-start-card" onclick="startFromProblem('refund')">
-        <span class="quick-icon">💸</span>
-        <strong>ร้านไม่คืนเงิน</strong>
-        <small>ยกเลิกหรือคืนสินค้าแล้ว ยังไม่ได้รับเงินคืน</small>
-      </button>
-
-      <button class="quick-start-card" onclick="startFromProblem('mismatch')">
-        <span class="quick-icon">🛍️</span>
-        <strong>ของไม่ตรงปก</strong>
-        <small>สินค้าไม่ตรงภาพ รายละเอียด หรือข้อความโฆษณา</small>
-      </button>
-
-      <button class="quick-start-card" onclick="startFromProblem('service')">
-        <span class="quick-icon">🛠️</span>
-        <strong>บริการมีปัญหา</strong>
-        <small>บริการไม่เป็นไปตามตกลง หรือไม่ได้รับการแก้ไข</small>
-      </button>
+  <section id="quickStart" class="content-section issue-explorer" aria-labelledby="issueHeading">
+    <div class="section-label">เลือกปัญหาที่กำลังเจอ</div>
+    <h2 id="issueHeading" class="section-heading">คุณกำลังเจอปัญหาแบบไหน?</h2>
+    <p class="section-subtitle">เลือกจาก 21 เรื่องที่พบบ่อย กดแล้วจะเห็นสิ่งที่ควรทำก่อน หลักฐาน และช่องทางติดต่อ ไม่ต้องสมัครสมาชิก</p>
+    <div class="issue-search-wrap">
+      <label for="issueSearch" class="issue-search-label">ค้นหาหัวข้อปัญหา</label>
+      <input type="search" id="issueSearch" autocomplete="off" placeholder="เช่น เงินเดือน มัดจำ พัสดุ ประกัน ถูกโกง" oninput="filterIssueCards()">
+      <span id="issueSearchCount" class="issue-search-count" aria-live="polite">21 หัวข้อ</span>
     </div>
+    <div class="emergency-strip" role="note"><strong>🚨 เพิ่งถูกหลอกโอนเงิน?</strong> ติดต่อธนาคารทันที และโทร <a href="tel:1441">AOC 1441</a> ก่อนกรอกแบบฟอร์มใด ๆ</div>
+    <div id="issueGroups" class="issue-groups">
+      <section class="issue-group" aria-label="เงินและการซื้อสินค้า"><h3>💰 เงินและการซื้อสินค้า</h3><div class="issue-card-grid">
+        <button type="button" class="issue-choice urgent-issue" data-issue="fraud" onclick="chooseIssueFromHome('fraud')"><strong>🚨 ถูกหลอกโอนเงิน</strong><small>รีบติดต่อธนาคารและ AOC 1441</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+        <button type="button" class="issue-choice " data-issue="online" onclick="chooseIssueFromHome('online')"><strong>ซื้อของออนไลน์ไม่ได้รับสินค้า</strong><small>ร้านไม่ส่งของ ติดต่อไม่ได้</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+        <button type="button" class="issue-choice " data-issue="refund" onclick="chooseIssueFromHome('refund')"><strong>ร้านค้าไม่คืนเงิน</strong><small>ซื้อแล้วไม่ได้รับเงินคืน</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+        <button type="button" class="issue-choice " data-issue="mismatch" onclick="chooseIssueFromHome('mismatch')"><strong>สินค้าไม่ตรงปก</strong><small>ของไม่ตรงภาพหรือโฆษณา</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+        <button type="button" class="issue-choice " data-issue="loan" onclick="chooseIssueFromHome('loan')"><strong>ให้คนยืมเงินแล้วไม่คืน</strong><small>แนวทางทวงถามและไกล่เกลี่ย</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+        <button type="button" class="issue-choice " data-issue="finance" onclick="chooseIssueFromHome('finance')"><strong>ธนาคารหรือบัตรเครดิตมีปัญหา</strong><small>ธุรกรรม สินเชื่อ และค่าธรรมเนียม</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+        <button type="button" class="issue-choice " data-issue="debtcollect" onclick="chooseIssueFromHome('debtcollect')"><strong>ถูกทวงหนี้ไม่เป็นธรรม</strong><small>วิธีเตรียมข้อมูลเพื่อขอคำปรึกษา</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+      </div></section>
+      <section class="issue-group" aria-label="ที่อยู่อาศัยและการทำงาน"><h3>🏠 ที่อยู่อาศัยและการทำงาน</h3><div class="issue-card-grid">
+        <button type="button" class="issue-choice " data-issue="housing" onclick="chooseIssueFromHome('housing')"><strong>หอพักไม่คืนเงินมัดจำ</strong><small>ขอคืนเงินประกันห้องพัก</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+        <button type="button" class="issue-choice " data-issue="lease" onclick="chooseIssueFromHome('lease')"><strong>ปัญหาสัญญาเช่า</strong><small>เจ้าของหอหรือผู้ให้เช่าเอาเปรียบ</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+        <button type="button" class="issue-choice " data-issue="labor" onclick="chooseIssueFromHome('labor')"><strong>นายจ้างไม่จ่ายเงินเดือน</strong><small>มีค่าจ้างค้างจ่าย</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+        <button type="button" class="issue-choice " data-issue="overtime" onclick="chooseIssueFromHome('overtime')"><strong>ไม่ได้รับค่าล่วงเวลา</strong><small>โอทีไม่ครบหรือไม่ได้รับ</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+        <button type="button" class="issue-choice " data-issue="dismissal" onclick="chooseIssueFromHome('dismissal')"><strong>ถูกเลิกจ้าง</strong><small>ตรวจช่องทางคุ้มครองสิทธิแรงงาน</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+      </div></section>
+      <section class="issue-group" aria-label="ขนส่ง ประกัน และบริการ"><h3>📦 ขนส่ง ประกัน และบริการ</h3><div class="issue-card-grid">
+        <button type="button" class="issue-choice " data-issue="post" onclick="chooseIssueFromHome('post')"><strong>ไปรษณีย์ไทย / EMS เสียหาย</strong><small>พัสดุเปียก แตก หรือสูญหาย</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+        <button type="button" class="issue-choice " data-issue="otherParcel" onclick="chooseIssueFromHome('otherParcel')"><strong>ขนส่งเอกชนทำพัสดุเสียหาย</strong><small>ติดต่อบริษัทและเก็บเลขเคส</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+        <button type="button" class="issue-choice " data-issue="insurance" onclick="chooseIssueFromHome('insurance')"><strong>บริษัทประกันไม่จ่าย</strong><small>ปฏิเสธเคลม ประกันภัย</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+        <button type="button" class="issue-choice " data-issue="telecom" onclick="chooseIssueFromHome('telecom')"><strong>โทรศัพท์หรืออินเทอร์เน็ต</strong><small>สัญญาณ บิล หรือบริการมีปัญหา</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+        <button type="button" class="issue-choice " data-issue="publicTransport" onclick="chooseIssueFromHome('publicTransport')"><strong>รถโดยสารมีปัญหา</strong><small>รถเมล์ แท็กซี่ หรือรถสาธารณะ</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+        <button type="button" class="issue-choice " data-issue="consumer" onclick="chooseIssueFromHome('consumer')"><strong>บริการไม่เป็นธรรม</strong><small>งานซ่อม บริการ หรือร้านค้า</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+      </div></section>
+      <section class="issue-group" aria-label="ภาครัฐ สุขภาพ และเรื่องทั่วไป"><h3>🏛️ ภาครัฐ สุขภาพ และเรื่องทั่วไป</h3><div class="issue-card-grid">
+        <button type="button" class="issue-choice " data-issue="nhso" onclick="chooseIssueFromHome('nhso')"><strong>สิทธิบัตรทองมีปัญหา</strong><small>สิทธิรักษาพยาบาล สปสช.</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+        <button type="button" class="issue-choice " data-issue="government" onclick="chooseIssueFromHome('government')"><strong>มีปัญหากับบริการรัฐ</strong><small>ขอความช่วยเหลือจากหน่วยงานรัฐ</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+        <button type="button" class="issue-choice " data-issue="other" onclick="chooseIssueFromHome('other')"><strong>ไม่รู้ควรไปร้องที่ไหน</strong><small>เริ่มจากอธิบายปัญหา</small><span aria-hidden="true">ดูแนวทาง →</span></button>
+      </div></section>
+    </div>
+    <p id="issueNoResults" class="issue-no-results hidden">ไม่พบหัวข้อที่ตรงกับคำค้น ลองคำสั้น ๆ หรือเลือก “ไม่รู้ควรไปร้องที่ไหน” ด้านบน</p>
   </section>
 
+  <section id="officialDirectory" class="content-section agency-directory" aria-labelledby="directoryTitle">
+    <div class="section-label">ช่องทางทางการ</div>
+    <h2 id="directoryTitle" class="section-heading">15 หน่วยงานและช่องทางที่เกี่ยวข้อง</h2>
+    <p class="section-subtitle">ลิงก์ไปยังเว็บไซต์ของหน่วยงานหรือองค์กรต้นทาง ไม่ใช่ระบบที่เว็บไซต์เรารับเรื่องแทน โปรดตรวจขอบเขตและเงื่อนไขแต่ละแห่ง</p>
+    <div id="directoryGrid" class="directory-grid" aria-live="polite"></div>
+    <p class="directory-small">ข้อมูลช่องทางตรวจสอบเบื้องต้น ณ ตุลาคม 2569 · บางลิงก์เป็นหน้าติดต่อหรือให้ข้อมูล ไม่ใช่หน้าส่งคำร้องโดยตรง</p>
+  </section>
   <section class="content-section">
     <div class="section-label">ความสามารถ</div>
     <h2 class="section-heading">ระบบเตรียมคำร้องเดิมยังอยู่ครบ</h2>

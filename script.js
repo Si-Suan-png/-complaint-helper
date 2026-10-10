@@ -7,7 +7,7 @@ const AUTO_SAVE_DELAY=1500;
 const STORAGE_KEY="consumerComplaintProductionV16";
 
 /*
-  VERSION 24.1 + UMAMI — clarified follow-up; V23 complaint flow retained
+  VERSION 25 + UMAMI — clarified follow-up; V23 complaint flow retained
   ------------------------------------
   ระบบนี้ "ไม่ส่งค่าจากฟอร์ม" ไปยัง Analytics
   ส่งได้เฉพาะชื่อ Event ที่อยู่ใน ANALYTICS_EVENTS เท่านั้น
@@ -62,7 +62,10 @@ const ANALYTICS_EVENTS=new Set([
   "followup_official_link_open",
   "followup_parcel_tracking_open",
   "route_open_1111",
-  "route_open_police"
+  "route_open_police",
+  "directory_agency_open",
+  "route_open_dlw", "route_open_mol", "route_open_dlt", "route_open_nhso",
+  "route_open_court", "route_open_tcc", "route_open_damrong"
 ]);
 
 let analyticsQueue=[];
@@ -983,28 +986,109 @@ const FINDER_PATHS={
   housing:{title:"เงินมัดจำหอพัก/ปัญหาสัญญาเช่า",steps:["เก็บสัญญา หลักฐานจ่ายเงิน ภาพสภาพห้องก่อน-หลัง","ขอเหตุผลการหักเงินและแจ้งคำขอคืนเงินเป็นลายลักษณ์อักษร","ตรวจสอบกฎหมายที่ใช้กับผู้ให้เช่าแต่ละประเภท และพิจารณาขอคำแนะนำจาก สคบ. เมื่อเกี่ยวข้อง"],primary:"ocpb",alternates:[],wizard:null},
   other:{title:"ยังไม่แน่ใจว่าควรไปที่ไหน",steps:["เขียนสรุปเหตุการณ์ให้ชัดว่าเกิดกับใคร ที่ไหน เมื่อใด","เก็บเอกสารและหลักฐานที่เกี่ยวข้อง","ลองสอบถามศูนย์ 1111 สำหรับเรื่องร้องทุกข์ภาครัฐ หรือหาหน่วยงานเฉพาะทางก่อนยื่น"],primary:null,alternates:[],wizard:null}
 };
+
+/* V25 — New visible issue directory. No personal input is sent to analytics. */
+Object.assign(AGENCIES,{
+  dlw:{name:"กรมสวัสดิการและคุ้มครองแรงงาน",short:"กรมสวัสดิการฯ",url:"https://eservice.labour.go.th/",reason:"ช่องทาง e-Service เกี่ยวกับค่าจ้างค้างจ่าย ค่าชดเชย และสิทธิแรงงานตามประเภทการจ้าง (อาจต้องลงทะเบียน)",event:"route_open_dlw"},
+  mol:{name:"กระทรวงแรงงาน — ร้องทุกข์ด้านแรงงาน",short:"กระทรวงแรงงาน",url:"https://www.mol.go.th/service-complaint",reason:"สอบถามหรือร้องทุกข์แรงงานทั่วไป โทร 1506 กด 5",event:"route_open_mol"},
+  dlt:{name:"กรมการขนส่งทางบก — ศูนย์ 1584",short:"กรมการขนส่งทางบก",url:"https://1584dltsms.dlt.go.th/",reason:"เรื่องร้องเรียนบริการรถโดยสารสาธารณะและแท็กซี่ โทร 1584",event:"route_open_dlt"},
+  nhso:{name:"สำนักงานหลักประกันสุขภาพแห่งชาติ (สปสช.)",short:"สปสช.",url:"https://www.nhso.go.th/",reason:"ปัญหาการใช้สิทธิหลักประกันสุขภาพแห่งชาติ (บัตรทอง) โทร 1330",event:"route_open_nhso"},
+  court:{name:"สำนักงานศาลยุติธรรม — ไกล่เกลี่ยก่อนฟ้อง",short:"ศาลยุติธรรม",url:"https://mediation.coj.go.th/",reason:"พิจารณาใช้กระบวนการไกล่เกลี่ยก่อนฟ้องสำหรับข้อพิพาททางแพ่งตามเงื่อนไข",event:"route_open_court"},
+  tcc:{name:"สภาองค์กรของผู้บริโภค",short:"สภาผู้บริโภค",url:"https://www.tcc.or.th/ร้องเรียน/",reason:"รับเรื่องหรือช่วยประสานปัญหาสิทธิผู้บริโภค โทร 1502",event:"route_open_tcc"},
+  damrong:{name:"ศูนย์ดำรงธรรม กระทรวงมหาดไทย",short:"ศูนย์ดำรงธรรม",url:"https://moi.go.th/moi/",reason:"ความเดือดร้อนประชาชนและการประสานหน่วยงานในพื้นที่ โทร 1567; เว็บไซต์นี้เป็นหน้ากระทรวง ไม่ใช่ฟอร์มร้องเรียนโดยตรง",event:"route_open_damrong"}
+});
+
+/* These routes distinguish typical claims, disputes and suspected scams. */
+Object.assign(FINDER_PATHS,{
+  refund:{title:"ร้านค้าไม่คืนเงิน",steps:["รวบรวมใบเสร็จ หลักฐานชำระเงิน และเงื่อนไขการคืนสินค้า","ติดต่อผู้ขายหรือแพลตฟอร์มเพื่อขอเงินคืนเป็นลายลักษณ์อักษร","หากไม่ได้รับการแก้ไข ตรวจสอบช่องทาง สคบ. หรือ 1212 ETDA ตามลักษณะการซื้อขาย"],evidence:["ใบเสร็จ/หลักฐานชำระเงิน","หลักฐานการซื้อและเงื่อนไขคืนเงิน","แชตหรืออีเมลติดต่อร้าน"],primary:"ocpb",alternates:["etda","tcc"],wizard:"refund"},
+  mismatch:{title:"สินค้าไม่ตรงปก",steps:["บันทึกภาพสินค้าและประกาศที่ใช้ขาย","เก็บหลักฐานการสั่งซื้อและติดต่อร้านหรือแพลตฟอร์ม","พิจารณาช่องทาง สคบ. หรือ 1212 ETDA สำหรับปัญหาซื้อขายออนไลน์"],evidence:["ภาพสินค้าและบรรจุภัณฑ์","ภาพโฆษณา/รายละเอียดสินค้า","หลักฐานชำระเงินและสนทนา"],primary:"ocpb",alternates:["etda","tcc"],wizard:"mismatch"},
+  lease:{title:"ข้อพิพาทสัญญาเช่าที่อยู่อาศัย",steps:["ตรวจเงื่อนไขในสัญญาและหลักฐานการรับส่งห้อง","ขอเหตุผล/ข้อกำหนดที่ใช้เรียกเก็บหรือหักเงินเป็นลายลักษณ์อักษร","หากเป็นธุรกิจให้เช่าที่อยู่อาศัยภายใต้กฎเกณฑ์ที่เกี่ยวข้อง ปรึกษา สคบ. หากเป็นข้อพิพาทแพ่งอาจสอบถามการไกล่เกลี่ย"],evidence:["สัญญาเช่า","หลักฐานจ่ายค่าเช่าหรือมัดจำ","รูปสภาพห้องและข้อความโต้แย้ง"],primary:"ocpb",alternates:["court","tcc"],wizard:null},
+  overtime:{title:"นายจ้างไม่จ่ายค่าล่วงเวลา",steps:["เก็บหลักฐานวันและเวลาที่ทำงานจริง รวมถึงคำสั่งให้ทำงาน","เก็บสลิปเงินเดือนและการทวงถาม","ตรวจประเภทการจ้างและสอบถามกรมสวัสดิการและคุ้มครองแรงงานก่อนยื่นคำร้อง"],evidence:["ตารางงาน/บันทึกเวลา","สัญญาจ้างหรือหลักฐานการเป็นลูกจ้าง","สลิปเงินเดือนและข้อความทวงถาม"],primary:"dlw",alternates:["mol"],wizard:null},
+  dismissal:{title:"ถูกเลิกจ้างหรือยังไม่ได้รับค่าชดเชย",steps:["รวบรวมสัญญาจ้าง วันเริ่มและสิ้นสุดงาน","ขอเอกสารเลิกจ้างและหลักฐานการจ่ายค่าจ้างครั้งสุดท้าย","สอบถามกรมสวัสดิการและคุ้มครองแรงงานเพื่อประเมินสิทธิตามเงื่อนไขของกฎหมาย"],evidence:["หลักฐานการจ้างและอายุงาน","หนังสือเลิกจ้าง/ข้อความแจ้ง","สลิปเงินเดือน"],primary:"dlw",alternates:["mol"],wizard:null},
+  debtcollect:{title:"ถูกทวงหนี้ไม่เป็นธรรม",steps:["เก็บวันเวลา เบอร์โทร ข้อความและหลักฐานพฤติกรรมการทวงถาม","ตรวจว่าเจ้าหนี้และผู้ทวงหนี้เป็นใคร และลักษณะเหตุการณ์","ปรึกษาช่องทางคุ้มครองผู้ใช้บริการทางการเงิน หากเกี่ยวกับผู้ให้บริการในกำกับ หรือสอบถามหน่วยงานรัฐเพื่อหาช่องทางร้องเรียนอื่น"],evidence:["ข้อความ/บันทึกเวลาและวิธีทวงหนี้","ข้อมูลเจ้าหนี้/ผู้ทวงหนี้เท่าที่ทราบ","สัญญาหรือหลักฐานยอดหนี้ (ถ้ามี)"],primary:null,alternates:["bot","gov1111"],wizard:null,note:"ข้อร้องเรียนเรื่องการทวงหนี้ขึ้นอยู่กับผู้ทวงหนี้และข้อเท็จจริง ไม่ใช่ทุกกรณีที่ ธปท. มีอำนาจรับเรื่อง"},
+  loan:{title:"ให้ผู้อื่นยืมเงินแล้วไม่คืน",steps:["เก็บสัญญากู้ ข้อความตกลงและหลักฐานการโอน/ส่งมอบเงิน","ทวงถามโดยสุภาพเป็นลายลักษณ์อักษรและเก็บหลักฐานไว้","กรณีเป็นข้อพิพาททางแพ่งทั่วไป อาจพิจารณาไกล่เกลี่ยก่อนฟ้องผ่านศาลยุติธรรม ตามเงื่อนไข"],evidence:["หลักฐานโอนเงินหรือส่งมอบเงิน","สัญญากู้/แชตยืนยันการยืม","หลักฐานการทวงถาม"],primary:"court",alternates:[],wizard:null,note:"การไม่คืนเงินกู้ไม่ได้เป็นคดีฉ้อโกงทุกกรณี และการไกล่เกลี่ยไม่ได้รับประกันว่าจะได้เงินคืน"},
+  publicTransport:{title:"ปัญหารถโดยสารสาธารณะ",steps:["จดทะเบียนรถ วันเวลา จุดขึ้นลงและเส้นทาง","เก็บใบเสร็จ รูป หรือหลักฐานที่เกี่ยวข้องหากทำได้อย่างปลอดภัย","ติดต่อกรมการขนส่งทางบก สายด่วน 1584 หรือช่องทางที่เกี่ยวข้อง"],evidence:["ทะเบียนรถ/สายรถ/ข้อมูลผู้ให้บริการ","วันเวลาและสถานที่","ภาพหรือหลักฐานการชำระเงิน (ถ้ามี)"],primary:"dlt",alternates:[],wizard:null},
+  nhso:{title:"ปัญหาสิทธิบัตรทอง",steps:["ตรวจสิทธิและหน่วยบริการที่เกี่ยวข้อง","จดวันเวลา สถานพยาบาล และรายละเอียดปัญหาเท่าที่จำเป็น","ติดต่อ สปสช. โทร 1330 เพื่อขอคำแนะนำและตรวจช่องทางร้องเรียน"],evidence:["วันที่รับบริการและสถานพยาบาล","รายละเอียดปัญหา","เอกสารการบริการ (ถ้ามี) โดยอย่าเผยแพร่ข้อมูลสุขภาพต่อสาธารณะ"],primary:"nhso",alternates:[],wizard:null},
+  labor:{title:"นายจ้างไม่จ่ายเงินเดือน",steps:["เก็บหลักฐานว่าทำงานในช่วงใดและได้รับค่าจ้างเท่าใด","คำนวณยอดค่าจ้างค้างจ่ายจากหลักฐานจริง โดยไม่เดาสิทธิค่าชดเชย","ติดต่อกรมสวัสดิการและคุ้มครองแรงงานเพื่อตรวจเงื่อนไขยื่นคำร้อง"],evidence:["สัญญาจ้าง/หลักฐานการทำงาน","สลิปเงินเดือนหรือรายการเดินบัญชี","แชตหรือหนังสือทวงถาม"],primary:"dlw",alternates:["mol"],wizard:null},
+  housing:{title:"หอพักไม่คืนเงินมัดจำ",steps:["เก็บสัญญา หลักฐานชำระเงิน และรูปสภาพห้อง","ขอรายการหักเงินและเหตุผลเป็นลายลักษณ์อักษร","พิจารณาปรึกษา สคบ. เมื่อเป็นข้อพิพาทผู้บริโภคภายใต้เงื่อนไขที่เกี่ยวข้อง หรือช่องทางไกล่เกลี่ยทางแพ่ง"],evidence:["สัญญาเช่า/ใบรับเงินมัดจำ","หลักฐานการส่งมอบห้อง","ข้อความปฏิเสธคืนเงินหรือรายการหัก"],primary:"ocpb",alternates:["court","tcc"],wizard:null},
+  government:{title:"เรื่องร้องทุกข์เกี่ยวกับบริการของรัฐ",steps:["ระบุหน่วยงานและวันที่ติดต่อ","เก็บหนังสือหรือเลขอ้างอิงที่ได้รับ","สอบถามหน่วยงานต้นเรื่องก่อน หรือพิจารณาศูนย์ 1111 และศูนย์ดำรงธรรมตามขอบเขต"],evidence:["ชื่อหน่วยงานและวันติดต่อ","หนังสือหรือเลขรับเรื่อง (ถ้ามี)"],primary:"gov1111",alternates:["damrong"],wizard:null},
+  other:{title:"ไม่แน่ใจว่าควรติดต่อที่ไหน",steps:["สรุปเหตุการณ์สั้น ๆ ว่าเกิดอะไรขึ้นกับใคร เมื่อใด","แยกว่าเป็นปัญหาผู้บริโภค แรงงาน การเงิน สุขภาพ หรือภาครัฐ","สอบถามศูนย์ช่วยเหลือทั่วไปที่เหมาะกับประเภทปัญหาเพื่อขอคำแนะนำก่อนส่งเรื่อง"],evidence:["วันเวลาและข้อเท็จจริง","เอกสารประกอบที่เกี่ยวข้อง (ถ้ามี)"],primary:null,alternates:["gov1111","tcc","damrong"],wizard:null,note:"ศูนย์ทั่วไปไม่ได้มีอำนาจรับหรือพิจารณาทุกประเภทเรื่อง โปรดแจ้งลักษณะข้อพิพาทเพื่อคัดกรองอีกครั้ง"},
+  fraud:{title:"สงสัยถูกหลอกโอนเงิน — เร่งด่วน",urgent:true,steps:["ติดต่อธนาคารผู้ให้บริการบัญชีที่เกี่ยวข้องทันที","โทรศูนย์ AOC 1441 โดยไม่ต้องรอกรอกแบบฟอร์มของเรา","เก็บหลักฐานการโอนและแชต และแจ้งความตามช่องทางตำรวจที่เหมาะสม"],evidence:["สลิป/เลขรายการโอนเงิน","เลขบัญชีและข้อมูลผู้รับเท่าที่ทราบ","แชต/ลิงก์/ประกาศที่ใช้หลอก"],primary:"police",alternates:[],wizard:null,note:"เว็บไซต์นี้ไม่ได้อายัดเงินหรือส่งแจ้งความแทนผู้เสียหาย"}
+});
+
+// Evidence suggestions for existing categories from the previous version.
+Object.assign(FINDER_PATHS.online,{evidence:["หลักฐานการสั่งซื้อและเลขคำสั่งซื้อ","สลิปโอนเงิน/ใบเสร็จ","แชตกับผู้ขายและหน้าประกาศสินค้า"],note:"หากมีพฤติการณ์หลอกลวงและเพิ่งโอนเงิน โปรดติดต่อธนาคารและ AOC 1441 ทันที อย่ารอการคืนเงินจากร้านอย่างเดียว"});
+Object.assign(FINDER_PATHS.consumer,{evidence:["หลักฐานชำระเงิน/สัญญาบริการ","รูปหรือหลักฐานปัญหาที่เกิดขึ้น","ข้อความติดต่อผู้ประกอบการ"]});
+Object.assign(FINDER_PATHS.post,{evidence:["เลขพัสดุและภาพกล่อง/ใบปะหน้า","ภาพความเสียหายและหลักฐานมูลค่าสิ่งของ","หมายเลขเคสและคำตอบจากไปรษณีย์ไทย"]});
+Object.assign(FINDER_PATHS.otherParcel,{evidence:["เลขพัสดุและภาพก่อน/หลังรับของ","ใบเสร็จ/หลักฐานมูลค่า","ประวัติการแจ้งบริษัทขนส่ง"]});
+Object.assign(FINDER_PATHS.telecom,{evidence:["หมายเลขบริการหรือสัญญา","ใบแจ้งค่าบริการ","บันทึกปัญหาและเลขรับเรื่องกับผู้ให้บริการ"]});
+Object.assign(FINDER_PATHS.insurance,{evidence:["สำเนากรมธรรม์ที่เกี่ยวข้อง","เอกสารเคลม/ใบปฏิเสธ","หลักฐานแจ้งเหตุและติดต่อบริษัท"]});
+Object.assign(FINDER_PATHS.finance,{evidence:["รายละเอียดธุรกรรมและวันเวลา","สัญญาหรือข้อกำหนดค่าบริการ","บันทึกการร้องเรียนกับผู้ให้บริการ"]});
+function chooseIssueFromHome(issue){
+  const select=document.getElementById('agencyIssue');
+  if(!FINDER_PATHS[issue])return;
+  select.value=issue;
+  openAgencyFinder();
+  renderAgencyFinder();
+}
+function filterIssueCards(){
+  const term=document.getElementById('issueSearch').value.trim().toLocaleLowerCase('th');
+  let count=0;
+  document.querySelectorAll('.issue-choice').forEach(card=>{
+    const match=card.textContent.toLocaleLowerCase('th').includes(term);
+    card.classList.toggle('hidden',!match);
+    if(match)count++;
+  });
+  document.querySelectorAll('.issue-group').forEach(group=>{
+    group.classList.toggle('hidden',!group.querySelector('.issue-choice:not(.hidden)'));
+  });
+  document.getElementById('issueSearchCount').textContent=`${count} หัวข้อ`;
+  document.getElementById('issueNoResults').classList.toggle('hidden',count!==0);
+}
+const DIRECTORY_KEYS=['ocpb','etda','thpost','nbtc','oic','bot','police','gov1111','dlw','mol','dlt','nhso','court','tcc','damrong'];
+function renderOfficialDirectory(){
+  const box=document.getElementById('directoryGrid');
+  if(!box)return;
+  const directoryLabels={
+    ocpb:'สินค้าและบริการ',etda:'ซื้อขายออนไลน์',thpost:'ไปรษณีย์/EMS',nbtc:'โทรคมนาคม',
+    oic:'ประกันภัย',bot:'การเงิน',police:'อาชญากรรมออนไลน์',gov1111:'เรื่องร้องทุกข์รัฐ',
+    dlw:'ค่าจ้างค้างจ่าย',mol:'แรงงานทั่วไป',dlt:'รถโดยสารสาธารณะ',nhso:'สิทธิบัตรทอง',
+    court:'ข้อพิพาททางแพ่ง',tcc:'สิทธิผู้บริโภค',damrong:'เดือดร้อนในพื้นที่'
+  };
+  box.innerHTML=DIRECTORY_KEYS.map(key=>{
+    const agency=AGENCIES[key];
+    return `<article class="directory-item"><span>${escapeHTML(directoryLabels[key])}</span><h3>${escapeHTML(agency.short)}</h3><p>${escapeHTML(agency.reason)}</p><a href="${agency.url}" target="_blank" rel="noopener noreferrer" onclick="trackAgencyDirectory('${key}')">เปิดช่องทางทางการ ↗</a></article>`;
+  }).join('');
+}
+function trackAgencyDirectory(key){
+  if(DIRECTORY_KEYS.includes(key))trackEvent('directory_agency_open');
+}
+
 function renderAgencyFinder(){
-  const issue=document.getElementById("agencyIssue").value;
-  const box=document.getElementById("agencyFinderResult");
+  const issue=document.getElementById('agencyIssue').value;
+  const box=document.getElementById('agencyFinderResult');
   const item=FINDER_PATHS[issue];
   if(!item){box.innerHTML='<p class="tool-empty">เลือกปัญหาด้านบน เพื่อดูทางเริ่มต้นที่เหมาะสม</p>';return}
-  trackEvent("agency_result_view");
-  let html=`<h3>${escapeHTML(item.title)}</h3>`;
-  if(item.urgent)html+='<div class="tool-urgent"><strong>⚠️ กรณีเร่งด่วน</strong><br>ติดต่อธนาคารและโทร <a href="tel:1441">AOC 1441</a> ทันที อย่ารอสร้างคำร้องบนเว็บไซต์นี้</div>';
-  html+='<ol class="tool-steps">'+item.steps.map(t=>`<li>${escapeHTML(t)}</li>`).join('')+'</ol>';
+  trackEvent('agency_result_view');
+  let text=`<h3>${escapeHTML(item.title)}</h3>`;
+  if(item.urgent)text+='<div class="tool-urgent"><strong>⚠️ ต้องดำเนินการทันที</strong><p>ติดต่อธนาคารที่เกี่ยวข้อง แล้วโทร <a href="tel:1441">AOC 1441</a> โดยไม่ต้องรอสร้างคำร้อง</p><a class="hotline-action" href="tel:1441">โทร 1441</a></div>';
+  text+='<h4>ควรเริ่มอย่างไร</h4><ol class="tool-steps">'+item.steps.map(step=>`<li>${escapeHTML(step)}</li>`).join('')+'</ol>';
+  if(item.evidence?.length)text+='<h4>หลักฐานที่ควรเตรียม (ถ้ามี)</h4><ul class="finder-evidence">'+item.evidence.map(e=>`<li>${escapeHTML(e)}</li>`).join('')+'</ul>';
+  if(item.note)text+=`<p class="finder-caution">${escapeHTML(item.note)}</p>`;
   if(item.primary){
-    const a=AGENCIES[item.primary];
-    const label=item.startFirst?"ช่องทางพิจารณาหากติดต่อบริษัทแล้วไม่ได้รับการแก้ไข":"เว็บไซต์ทางการที่อาจเกี่ยวข้อง";
-    html+=`<div class="finder-agency"><span>${label}</span><strong>${escapeHTML(a.name)}</strong><p>${escapeHTML(a.reason)}</p><button type="button" class="tool-primary-btn" onclick="openAgency('${item.primary}')">เปิดเว็บไซต์ทางการ →</button></div>`;
+    const agency=AGENCIES[item.primary];
+    const label=item.startFirst?'หากติดต่อบริษัทแล้วยังแก้ไม่ได้ อาจปรึกษา':'ช่องทางหลักที่ควรพิจารณา';
+    text+=`<div class="finder-agency"><span>${label}</span><strong>${escapeHTML(agency.name)}</strong><p>${escapeHTML(agency.reason)}</p><button type="button" class="tool-primary-btn" onclick="openAgency('${item.primary}')">ไปยังเว็บไซต์ทางการ →</button></div>`;
   }
-  item.alternates.forEach(key=>{
-    const a=AGENCIES[key];
-    html+=`<div class="finder-secondary"><strong>ทางเลือกเพิ่มเติม: ${escapeHTML(a.short)}</strong><button type="button" class="secondary-action-button" onclick="openAgency('${key}')">ดูช่องทาง →</button></div>`;
+  (item.alternates||[]).forEach(key=>{
+    const agency=AGENCIES[key];
+    if(!agency)return;
+    text+=`<div class="finder-secondary"><div><strong>ช่องทางเพิ่มเติม: ${escapeHTML(agency.short)}</strong><p>${escapeHTML(agency.reason)}</p></div><button type="button" class="secondary-action-button" onclick="openAgency('${key}')">ดูช่องทาง →</button></div>`;
   });
-  if(issue==="labor")html+='<p class="tool-help">ระบบคัดกรองช่องทางแรงงานแบบละเอียดกำลังพัฒนา จึงยังไม่ใส่ลิงก์ยื่นคำร้องโดยอัตโนมัติ</p>';
-  if(issue==="other")html+='<p class="tool-help">เราไม่เลือกหน่วยงานให้โดยไม่มีข้อมูลเพียงพอ เพราะอาจทำให้ยื่นผิดช่องทางได้</p>';
-  if(item.wizard)html+=`<button type="button" class="tool-secondary-btn" onclick="startFromProblem('${item.wizard}')">เตรียมข้อความร้องเรียนสำหรับเรื่องนี้ →</button>`;
-  box.innerHTML=html;
+  if(item.wizard)text+=`<button type="button" class="tool-secondary-btn" onclick="startFromProblem('${item.wizard}')">สร้างข้อความร้องเรียนสำหรับกรณีนี้ →</button>`;
+  else if(!item.urgent)text+='<button type="button" class="tool-secondary-btn" onclick="startComplaint()">ใช้ตัวช่วยสร้างคำร้องทั่วไป →</button><p class="tool-help">แบบฟอร์มคำร้องทั่วไปอาจไม่มีคำถามเฉพาะสำหรับปัญหานี้ โปรดตรวจสอบข้อความก่อนนำไปใช้</p>';
+  text+='<p class="tool-disclaimer">ระบบนี้เพียงช่วยคัดกรองเบื้องต้น ไม่ได้ส่งคำร้องหรือยืนยันว่าหน่วยงานจะรับเรื่อง</p>';
+  box.innerHTML=text;
 }
 /* Official follow-up destinations: only verified tracking entry points are labeled
    “ตรวจสถานะ”. Other agency pages are for contacting the organization, not a
@@ -1106,6 +1190,7 @@ async function initializeApp(){
   enableAutoSave();
   updateContinueButton();
   updateFollowupAgencyLink();
+  renderOfficialDirectory();
   syncCategoryButtons();
   updateContactFields();
   updateParcelFields();

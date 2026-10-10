@@ -699,3 +699,42 @@ label{display:block;margin:18px 0 7px;color:#c2dde3;font-size:14px}input,select,
   .followup-channel-actions{flex-direction:column}
   .followup-channel-btn,.followup-channel-secondary{width:100%}
 }
+
+
+/* Version 25: prominent issue explorer and verified agency directory */
+.issue-explorer,.agency-directory{scroll-margin-top:22px}
+.issue-search-wrap{position:relative;max-width:760px;margin:23px 0 18px}
+.issue-search-label{display:block;font-weight:700;color:#b9edf0;font-size:14px;margin-bottom:9px}
+#issueSearch{display:block;width:100%;padding:15px 110px 15px 18px;color:#f5ffff;font:inherit;background:#041927;border:1px solid rgba(37,219,242,.35);border-radius:12px;outline-offset:3px}
+#issueSearch::placeholder{color:#83aab5}
+.issue-search-count{position:absolute;right:17px;bottom:15px;color:#9df3e1;font-size:12px}
+.emergency-strip{display:flex;align-items:center;flex-wrap:wrap;gap:9px;padding:14px 17px;margin:18px 0 24px;color:#ffe7bd;background:rgba(136,83,20,.13);border:1px solid rgba(245,178,76,.38);border-radius:12px;font-size:14px;line-height:1.6}
+.emergency-strip a{color:#05251b;background:#ffdb89;text-decoration:none;border-radius:6px;padding:3px 10px;font-weight:900}
+.issue-groups{display:grid;gap:28px}
+.issue-group{padding:22px;background:rgba(3,23,36,.83);border:1px solid rgba(67,230,251,.13);border-radius:16px}
+.issue-group h3{margin:0 0 17px;color:#f4ffff;font-size:20px;line-height:1.4}
+.issue-card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.issue-choice{text-align:left;display:flex;flex-direction:column;gap:8px;min-height:128px;padding:17px 15px;color:#e8ffff;background:linear-gradient(125deg,rgba(7,49,62,.65),rgba(2,18,31,.96));border:1px solid rgba(55,205,230,.20);border-radius:12px;transition:transform .15s,border-color .15s}
+.issue-choice:hover,.issue-choice:focus-visible{border-color:#2adef0;transform:translateY(-2px)}
+.issue-choice strong{font-size:15px;line-height:1.55;color:#fcffff}
+.issue-choice small{color:#9fbecb;font-size:12px;line-height:1.5;flex:1}
+.issue-choice span{color:#57ddea;font-weight:700;font-size:12px}
+.issue-choice.urgent-issue{border-color:rgba(247,179,77,.5);background:linear-gradient(115deg,rgba(83,50,18,.53),rgba(22,20,24,.96))}
+.issue-choice.urgent-issue span{color:#ffd18d}
+.issue-no-results{padding:25px;border-radius:12px;background:rgba(12,41,57,.7);color:#c3dce1}
+.directory-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-top:18px}
+.directory-item{display:flex;flex-direction:column;padding:20px 17px;border:1px solid rgba(66,215,224,.19);border-radius:12px;background:rgba(4,28,40,.85)}
+.directory-item>span{font-size:11px;letter-spacing:.02em;color:#60dde8}
+.directory-item h3{margin:6px 0 9px;font-size:17px;color:#fff}
+.directory-item p{margin:0 0 17px;font-size:12.5px;line-height:1.65;color:#a8c7d0;flex:1}
+.directory-item>a{font-size:13px;text-decoration:none;font-weight:700;color:#70eddb;border:1px solid rgba(78,228,224,.3);border-radius:8px;padding:10px 11px;text-align:center}
+.directory-item>a:hover{background:rgba(49,223,202,.07)}
+.directory-small{font-size:12px;color:#9fbac3;margin-top:17px}
+.finder-evidence{padding-left:20px;color:#c4e1e3;line-height:1.7;margin:8px 0 20px}
+.finder-caution{padding:14px;border:1px solid rgba(245,191,94,.35);border-radius:10px;color:#ffe1ba;background:rgba(121,77,22,.13)}
+.tool-result h4{font-size:15px;color:#e0f8ff;margin:20px 0 8px}
+.finder-secondary p{color:#93bac5;font-size:12px;margin:6px 0 0}
+.hotline-action{display:inline-block;padding:8px 13px;margin-top:8px;border-radius:8px;background:#ffe2a0;color:#19160d!important;text-decoration:none;font-weight:800}
+@media(max-width:920px){.issue-card-grid,.directory-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:570px){.issue-group{padding:15px 12px}.issue-card-grid,.directory-grid{grid-template-columns:1fr}.issue-choice{min-height:110px}.issue-group h3{font-size:17px}.directory-item{padding:15px}.emergency-strip{font-size:13px}#issueSearch{font-size:13px}}
+@media(prefers-reduced-motion:reduce){.issue-choice{transition:none}.issue-choice:hover{transform:none}}
