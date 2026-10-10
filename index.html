@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<!-- Complaint Helper V23: improve contextual question headings and mobile radio clarity; core logic retained -->
+<!-- Complaint Helper V24.1: clearer follow-up assistant; previous tools preserved -->
 <html lang="th">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="มีปัญหากับร้านค้า ขนส่ง หรือบริการ? เตรียมเรื่องร้องเรียนฟรี ตอบคำถามง่าย ๆ ไม่ต้องสมัครสมาชิก และรับข้อความพร้อมใช้">
-  <title>ผู้ช่วยเตรียมคำร้อง</title>
+  <meta name="description" content="มีปัญหาไม่รู้จะเริ่มตรงไหน? ค้นหาช่องทางร้องเรียน เตรียมหนังสือ และสร้างข้อความติดตามเรื่อง ฟรี ไม่ต้องสมัครสมาชิก">
+  <title>ช่วยเริ่มแก้ปัญหา | Complaint Helper</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,31 +14,129 @@
 
 <div id="homePage" class="page active-page">
   <header class="top-nav">
-    <div class="brand">ผู้ช่วยเตรียมคำร้อง</div>
+    <div class="brand">Complaint Helper <span class="brand-thai">ผู้ช่วยแก้ปัญหา</span></div>
     <nav>
-      <a href="#how">วิธีใช้งาน</a>
-      <a href="#faq">คำถามที่พบบ่อย</a>
+      <a href="#services">เริ่มใช้งาน</a>
+      <a href="#quickStart">ประเภทปัญหา</a>
       <a href="#privacy">ความเป็นส่วนตัว</a>
     </nav>
   </header>
 
   <section class="hero" aria-labelledby="heroTitle">
     <div class="hero-shade" aria-hidden="true"></div>
-
-    <div class="hero-card">
-      <p class="hero-eyebrow"><span class="hero-eyebrow-dot" aria-hidden="true"></span>ผู้ช่วยร้องเรียนสำหรับคนไทย</p>
-      <h1 id="heroTitle">มีปัญหากับร้านค้า<br>หรือขนส่ง?</h1>
-      <p class="hero-promise">เราช่วยเตรียมเรื่องร้องเรียน</p>
-      <p class="hero-description">ตอบคำถามง่าย ๆ ทีละข้อ แล้วรับข้อความร้องเรียนพร้อมใช้</p>
-
-      <div class="hero-actions">
-        <button class="primary-button" type="button" onclick="startComplaint()">เริ่มเตรียมคำร้องฟรี <span aria-hidden="true">→</span></button>
+    <div class="hero-card platform-hero" id="services">
+      <p class="hero-eyebrow"><span class="hero-eyebrow-dot" aria-hidden="true"></span>เครื่องมือช่วยเริ่มแก้ปัญหาสำหรับคนไทย</p>
+      <h1 id="heroTitle">มีปัญหา<br><span class="highlight-word">ไม่รู้จะเริ่มตรงไหน?</span></h1>
+      <p class="hero-description">เราช่วยหาช่องทาง เตรียมคำร้อง และร่างข้อความติดตามเรื่องให้เป็นขั้นตอน</p>
+      <div class="service-paths" aria-label="เลือกสิ่งที่ต้องการความช่วยเหลือ">
+        <button type="button" class="service-path service-path-primary" onclick="openAgencyFinder()">
+          <span class="service-path-icon" aria-hidden="true">🧭</span>
+          <span class="service-path-content"><strong>ไม่รู้จะร้องเรียนที่ไหน</strong><small>เลือกปัญหา → ดูหน่วยงานที่ควรเริ่มติดต่อ</small></span>
+          <span class="service-path-arrow" aria-hidden="true">→</span>
+        </button>
+        <button type="button" class="service-path" onclick="startComplaint()">
+          <span class="service-path-icon" aria-hidden="true">📝</span>
+          <span class="service-path-content"><strong>ไม่รู้จะเขียนคำร้องอย่างไร</strong><small>ตอบทีละข้อ → รับข้อความร้องเรียนพร้อมใช้</small></span>
+          <span class="service-path-arrow" aria-hidden="true">→</span>
+        </button>
+        <button type="button" class="service-path" onclick="openFollowupTool()">
+          <span class="service-path-icon" aria-hidden="true">🔎</span>
+          <span class="service-path-content"><strong>ช่วยติดตามเรื่องที่ยื่นแล้ว</strong><small>ร่างข้อความสอบถาม และไปยังช่องทางทางการด้วยตัวเอง</small></span>
+          <span class="service-path-arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+      <div class="platform-draft-action">
         <button id="continueButton" class="secondary-button hidden" type="button" onclick="continueDraft()">เปิดแบบร่างล่าสุด</button>
       </div>
-      <p class="hero-trust"><span aria-hidden="true">✓</span> ฟรี <span aria-hidden="true">·</span> ไม่ต้องสมัครสมาชิก <span aria-hidden="true">·</span> แบบร่างอยู่ในเครื่อง</p>
-      <p class="hero-note">เครื่องมืออิสระ ไม่ใช่หน่วยงานรัฐ และไม่ได้ส่งคำร้องแทนผู้ใช้</p>
+      <p class="hero-trust">✓ ฟรี <span aria-hidden="true">·</span> ไม่ต้องสมัครสมาชิก <span aria-hidden="true">·</span> แบบร่างคำร้องอยู่ในเครื่อง</p>
+      <p class="hero-note">เว็บไซต์อิสระ ไม่ใช่หน่วยงานราชการ ไม่ได้รับเรื่อง ไม่ส่งข้อความ และไม่ตรวจสถานะให้โดยอัตโนมัติ</p>
     </div>
-    <a class="hero-scroll" href="#quickStart">หรือเลือกประเภทปัญหาก่อน <span aria-hidden="true">↓</span></a>
+  </section>
+
+  <section id="toolWorkspace" class="content-section tool-workspace hidden" aria-live="polite">
+    <div class="tool-workspace-top">
+      <span class="section-label">เครื่องมือช่วยเริ่มต้น</span>
+      <button type="button" class="tool-close" onclick="closeHomeTool()" aria-label="ปิดเครื่องมือ">✕ ปิด</button>
+    </div>
+
+    <section id="agencyTool" class="tool-panel hidden" aria-labelledby="agencyToolTitle">
+      <h2 id="agencyToolTitle">🧭 ไม่รู้จะร้องเรียนที่ไหน?</h2>
+      <p class="tool-lede">เริ่มจากเลือกประเภทปัญหา ระบบจะแสดงช่องทางที่อาจเกี่ยวข้อง โดยยังไม่ต้องกรอกชื่อหรือข้อมูลส่วนตัว</p>
+      <label for="agencyIssue">ปัญหาของคุณเกี่ยวกับเรื่องใด?</label>
+      <select id="agencyIssue" onchange="renderAgencyFinder()">
+        <option value="">-- เลือกประเภทปัญหา --</option>
+        <option value="online">ซื้อของออนไลน์ / ไม่ได้รับสินค้า</option>
+        <option value="consumer">ร้านค้าไม่คืนเงิน / บริการไม่เป็นธรรม</option>
+        <option value="post">ไปรษณีย์ไทย / EMS พัสดุเสียหาย</option>
+        <option value="otherParcel">พัสดุเสียหายจากขนส่งอื่น</option>
+        <option value="telecom">โทรศัพท์ / อินเทอร์เน็ต</option>
+        <option value="insurance">ประกันภัย / เคลมประกัน</option>
+        <option value="finance">ธนาคาร / บริการทางการเงิน</option>
+        <option value="government">เรื่องร้องทุกข์เกี่ยวกับหน่วยงานรัฐ</option>
+        <option value="fraud">ถูกหลอกโอนเงิน / สงสัยมิจฉาชีพ (เร่งด่วน)</option>
+        <option value="labor">นายจ้างค้างเงินเดือน / ปัญหาแรงงาน</option>
+        <option value="housing">หอพัก / สัญญาเช่า / เงินประกัน</option>
+        <option value="other">ปัญหาอื่น ๆ / ยังไม่แน่ใจ</option>
+      </select>
+      <div id="agencyFinderResult" class="tool-result" aria-live="polite">
+        <p class="tool-empty">เลือกปัญหาด้านบน เพื่อดูทางเริ่มต้นที่เหมาะสม</p>
+      </div>
+      <p class="tool-disclaimer">คำแนะนำเป็นข้อมูลเบื้องต้น ไม่ใช่การยืนยันว่าหน่วยงานจะรับเรื่องหรือเป็นคำปรึกษากฎหมาย ตรวจสอบข้อกำหนดในเว็บไซต์ทางการก่อนยื่นเสมอ</p>
+    </section>
+
+    <section id="followupTool" class="tool-panel hidden" aria-labelledby="followupToolTitle">
+      <h2 id="followupToolTitle">🔎 ช่วยติดตามเรื่องที่ยื่นแล้ว</h2>
+      <p class="tool-lede">ยื่นเรื่องแล้วแต่ไม่ทราบความคืบหน้า? เราช่วยร่างข้อความสอบถาม และพาไปยังช่องทางติดตามของหน่วยงานที่คุณเลือก</p>
+      <div class="followup-capability-note" role="note"><strong>สิ่งที่ระบบทำได้:</strong> เตรียมข้อความและบอกว่าควรตรวจสอบที่ไหน <br><strong>สิ่งที่ระบบไม่ได้ทำ:</strong> ตรวจสถานะจากฐานข้อมูลราชการ ส่งข้อความ หรือยืนยันว่าเรื่องได้รับการพิจารณาแล้ว</div>
+      <div class="tool-grid">
+        <div>
+          <label for="followAgency">ยื่นเรื่องไว้ที่ไหน?</label>
+          <select id="followAgency" onchange="updateFollowupAgencyLink()">
+            <option value="">-- เลือกหน่วยงาน --</option>
+            <option value="ocpb">สคบ.</option>
+            <option value="etda">1212 ETDA</option>
+            <option value="thpost">ไปรษณีย์ไทย</option>
+            <option value="nbtc">กสทช.</option>
+            <option value="oic">คปภ.</option>
+            <option value="bot">ธปท.</option>
+            <option value="gov1111">ศูนย์รับเรื่องราวร้องทุกข์ 1111</option>
+            <option value="other">หน่วยงานอื่น</option>
+          </select>
+          <div id="followAgencyOtherWrap" class="followup-other hidden">
+            <label for="followAgencyOther">ชื่อหน่วยงานที่รับเรื่อง (ถ้าทราบ)</label>
+            <input id="followAgencyOther" type="text" maxlength="150" autocomplete="off" placeholder="เช่น สำนักงาน..." oninput="updateFollowupAgencyLink()">
+          </div>
+        </div>
+        <div>
+          <label for="followDate">วันที่ยื่นเรื่อง (ถ้าทราบ)</label>
+          <input id="followDate" type="date">
+        </div>
+      </div>
+      <section id="followupOfficialLinks" class="followup-channel hidden" aria-live="polite" aria-label="ช่องทางติดตามเรื่องทางการ">
+        <div class="followup-channel-top">ช่องทางทางการที่ควรตรวจสอบ</div>
+        <h3 id="followupChannelTitle"></h3>
+        <p id="followupChannelHelp"></p>
+        <div class="followup-channel-actions">
+          <a id="followupChannelLink" class="followup-channel-btn hidden" target="_blank" rel="noopener noreferrer" href="#" onclick="trackEvent('followup_official_link_open')">เปิดเว็บไซต์ทางการ ↗</a>
+          <a id="followupParcelLink" class="followup-channel-secondary hidden" target="_blank" rel="noopener noreferrer" href="https://track.thailandpost.co.th/" onclick="trackEvent('followup_parcel_tracking_open')">เช็กสถานะพัสดุ (ไม่ใช่สถานะคำร้อง) ↗</a>
+        </div>
+        <p class="followup-channel-privacy">รหัสรับเรื่องที่คุณกรอกจะไม่ถูกแนบไปกับลิงก์ คุณต้องกรอกอีกครั้งบนเว็บไซต์หน่วยงานเอง</p>
+      </section>
+      <label for="followCase">เลขรับเรื่อง / เลขอ้างอิง (ถ้ามี)</label>
+      <input id="followCase" type="text" maxlength="120" autocomplete="off" placeholder="เลขอ้างอิงที่หน่วยงานแจ้งให้">
+      <label for="followNotes">ข้อมูลเพิ่มเติมที่ต้องการสอบถาม (ไม่บังคับ)</label>
+      <textarea id="followNotes" maxlength="500" placeholder="เช่น ส่งเอกสารเพิ่มเติมแล้ว แต่ยังไม่ทราบผลการพิจารณา"></textarea>
+      <button type="button" class="tool-primary-btn" onclick="generateFollowup()">สร้างข้อความติดตามเรื่อง →</button>
+      <div id="followupResult" class="tool-result hidden" aria-live="polite">
+        <h3>ข้อความสอบถามความคืบหน้า</h3>
+        <div id="followupText" class="generated-complaint"></div>
+        <div class="tool-result-actions">
+          <button type="button" class="tool-primary-btn" onclick="copyFollowup()">คัดลอกข้อความ</button>
+          <button id="followAgencyLink" type="button" class="secondary-action-button hidden" onclick="openFollowupAgency()">ไปยังช่องทางทางการ →</button>
+        </div>
+      </div>
+      <p class="tool-disclaimer">ระบบนี้ช่วยเตรียมการติดตามเท่านั้น ไม่ได้เชื่อมกับฐานข้อมูลหน่วยงาน และไม่อัปเดตสถานะคดี ข้อมูลที่กรอกใช้สร้างข้อความในเบราว์เซอร์ ไม่บันทึกเป็นแบบร่างหรือส่งเนื้อหาไปยังระบบสถิติ กรุณาคัดลอกข้อความก่อนปิดหน้าเว็บ และตรวจสอบสถานะจริงกับหน่วยงานต้นทาง</p>
+    </section>
   </section>
 
   <section id="quickStart" class="content-section">
@@ -75,7 +173,7 @@
 
   <section class="content-section">
     <div class="section-label">ความสามารถ</div>
-    <h2 class="section-heading">ช่วยเตรียมคำร้องได้อย่างไร</h2>
+    <h2 class="section-heading">ระบบเตรียมคำร้องเดิมยังอยู่ครบ</h2>
 
     <div class="feature-grid">
       <article class="feature-card">
@@ -100,7 +198,7 @@
 
   <section id="how" class="content-section">
     <div class="section-label">วิธีใช้งาน</div>
-    <h2 class="section-heading">4 ขั้นตอน</h2>
+    <h2 class="section-heading">วิธีเตรียมคำร้อง 4 ขั้นตอน</h2>
 
     <div class="process-list">
       <div class="process-card"><strong>01</strong><div><h3>ตอบทีละคำถาม</h3><p>เลือกประเภทปัญหา แล้วตอบคำถามสั้น ๆ 7 ข้อ ระบบจะจัดข้อมูลให้เอง</p></div></div>
@@ -137,7 +235,7 @@
 
       <details>
         <summary>เว็บไซต์เก็บสถิติอะไรบ้าง?</summary>
-        <p>ขณะนี้ยังไม่ได้เปิดใช้งานการส่งสถิติไปยังผู้ให้บริการ Analytics หากมีการเปิดใช้งานในอนาคต เราจะอัปเดตนโยบายให้ชัดเจน และจะไม่ส่งข้อมูลที่คุณกรอกในคำร้องหรือไฟล์หลักฐานเป็นข้อมูลเหตุการณ์สถิติ</p>
+        <p>เว็บไซต์ใช้ Umami Cloud เพื่อดูจำนวนการเข้าชมและเหตุการณ์การใช้งานทั่วไป เช่น การเริ่มทำคำร้อง การไปถึงหน้าผลลัพธ์ และการกดไปยังหน่วยงานทางการ โดยไม่ส่งข้อมูลที่กรอกในแบบฟอร์มหรือไฟล์หลักฐานไปกับเหตุการณ์สถิติ มีการตั้งค่าให้เคารพ Do Not Track ของเบราว์เซอร์ อ่านรายละเอียดได้ในนโยบายความเป็นส่วนตัว</p>
       </details>
     </div>
   </section>
@@ -160,8 +258,8 @@
   <div class="future-ad-slot" aria-hidden="true">พื้นที่โฆษณาในอนาคต</div>
 
   <footer>
-    <strong>ผู้ช่วยเตรียมคำร้องผู้บริโภค</strong><br>
-    เครื่องมืออิสระ • ไม่ใช่เว็บไซต์ของ สคบ.<br>
+    <strong>Complaint Helper — ผู้ช่วยเริ่มแก้ปัญหา</strong><br>
+    เครื่องมืออิสระ • ไม่ใช่หน่วยงานราชการ<br>
     <span>กรุณาตรวจสอบข้อมูลก่อนนำไปใช้ยื่นเรื่องจริง</span><br>
     <a class="footer-privacy-link" href="privacy.html">นโยบายความเป็นส่วนตัว</a>
   </footer>

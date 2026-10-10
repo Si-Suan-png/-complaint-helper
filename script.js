@@ -7,19 +7,17 @@ const AUTO_SAVE_DELAY=1500;
 const STORAGE_KEY="consumerComplaintProductionV16";
 
 /*
-  VERSION 23 — clear question context and accessible contact choices; V22 behavior retained
+  VERSION 24.1 + UMAMI — clarified follow-up; V23 complaint flow retained
   ------------------------------------
   ระบบนี้ "ไม่ส่งค่าจากฟอร์ม" ไปยัง Analytics
   ส่งได้เฉพาะชื่อ Event ที่อยู่ใน ANALYTICS_EVENTS เท่านั้น
 
-  วิธีเปิดใช้งานภายหลัง:
-  1) สร้าง Website ใน Umami
-  2) นำ Website ID มาแทน PASTE_UMAMI_WEBSITE_ID_HERE
-  ไม่ต้องแก้ส่วนอื่น
+  เชื่อมต่อ Website ID ของ Complaint Helper แล้ว
+  ส่งเฉพาะชื่อ Event ที่อนุญาตไว้ โดยไม่แนบค่าจากฟอร์ม
 */
 const ANALYTICS_CONFIG={
   enabled:true,
-  websiteId:"PASTE_UMAMI_WEBSITE_ID_HERE",
+  websiteId:"87fc92a7-eb9e-49a6-ae95-3e82f8559bbc",
   scriptUrl:"https://cloud.umami.is/script.js",
   allowedDomain:"si-suan-png.github.io"
 };
@@ -55,7 +53,16 @@ const ANALYTICS_EVENTS=new Set([
   "share_line",
   "share_facebook",
   "share_copy_link",
-  "go_fill_missing"
+  "go_fill_missing",
+  "open_agency_finder",
+  "agency_result_view",
+  "open_followup_tool",
+  "followup_generate",
+  "followup_copy",
+  "followup_official_link_open",
+  "followup_parcel_tracking_open",
+  "route_open_1111",
+  "route_open_police"
 ]);
 
 let analyticsQueue=[];
@@ -563,6 +570,20 @@ const AGENCIES={
     reason:"แจ้งเลขพัสดุ รายละเอียดเหตุ และขอให้บริษัทตรวจสอบก่อน โดยติดต่อ 1545 หรือที่ทำการไปรษณีย์ที่เกี่ยวข้องได้",
     event:"route_open_thpost"
   },
+  gov1111:{
+    name:"ศูนย์รับเรื่องราวร้องทุกข์ของรัฐบาล 1111",
+    short:"1111",
+    url:"https://www.1111.go.th/",
+    reason:"ช่องทางรับเรื่องร้องทุกข์ ประสานหน่วยงานภาครัฐและติดตามเรื่องตามขอบเขตที่รับผิดชอบ",
+    event:"route_open_1111"
+  },
+  police:{
+    name:"Thai Police Online — แจ้งความออนไลน์คดีอาชญากรรมทางเทคโนโลยี",
+    short:"ตำรวจออนไลน์",
+    url:"https://www.thaipoliceonline.go.th/",
+    reason:"สำหรับกรณีที่เข้าลักษณะอาชญากรรมทางเทคโนโลยี ต้องตรวจสอบขอบเขตและเงื่อนไขก่อนแจ้งความ",
+    event:"route_open_police"
+  },
   bot:{
     name:"ธนาคารแห่งประเทศไทย — บริการช่วยเหลือ/ร้องเรียน",
     short:"ธปท.",
@@ -895,13 +916,16 @@ function restoreAddress(data){if(!data.province)return;if(!provinces.length){pen
 function restoreChecks(name,values){if(!Array.isArray(values))return;document.querySelectorAll(`input[name="${name}"]`).forEach(i=>i.checked=values.includes(i.value))}
 function restoreRadio(name,value){if(!value)return;document.querySelectorAll(`input[name="${name}"]`).forEach(i=>i.checked=i.value===value)}
 function enableAutoSave(){
-  document.querySelectorAll('input[type="text"], input[type="tel"], input[type="number"], input[type="date"], textarea')
+  // Scope autosave to the complaint form. Inputs in the agency finder and
+  // follow-up tool must NOT modify existing complaint drafts.
+  const form=document.getElementById("formPage");
+  form.querySelectorAll('input[type="text"], input[type="tel"], input[type="number"], input[type="date"], textarea')
     .forEach(element=>element.addEventListener("input",scheduleAutoSave));
 
-  document.querySelectorAll('input[type="checkbox"], input[type="radio"]')
+  form.querySelectorAll('input[type="checkbox"], input[type="radio"]')
     .forEach(element=>element.addEventListener("change",()=>saveDraft()));
 
-  document.querySelectorAll("select").forEach(element=>{
+  form.querySelectorAll("select").forEach(element=>{
     if(!["province","district","subDistrict"].includes(element.id)){
       element.addEventListener("change",()=>{updateParcelFields();saveDraft()});
     }
@@ -928,11 +952,160 @@ async function copySiteLink(){
   await copyText(getShareUrl(),"คัดลอกลิงก์เว็บไซต์แล้ว");
 }
 
+
+/* Version 24 home tools. Input values are not persisted or sent to analytics. */
+function showHomeTool(toolId){
+  const workspace=document.getElementById("toolWorkspace");
+  const agency=document.getElementById("agencyTool");
+  const followup=document.getElementById("followupTool");
+  workspace.classList.remove("hidden");
+  agency.classList.toggle("hidden",toolId!=="agencyTool");
+  followup.classList.toggle("hidden",toolId!=="followupTool");
+  requestAnimationFrame(()=>workspace.scrollIntoView({behavior:"smooth",block:"start"}));
+}
+function openAgencyFinder(){trackEvent("open_agency_finder");showHomeTool("agencyTool")}
+function openFollowupTool(){trackEvent("open_followup_tool");showHomeTool("followupTool")}
+function closeHomeTool(){
+  document.getElementById("toolWorkspace").classList.add("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+const FINDER_PATHS={
+  online:{title:"ปัญหาซื้อขายออนไลน์",steps:["รวบรวมหลักฐานการสั่งซื้อ ชำระเงิน และการติดต่อร้าน","ติดต่อผู้ขายหรือแพลตฟอร์มเพื่อขอแก้ไขหากทำได้","ตรวจสอบช่องทาง 1212 ETDA และ สคบ. ว่าเหมาะกับข้อพิพาทของคุณหรือไม่"],primary:"etda",alternates:["ocpb"],wizard:"refund"},
+  consumer:{title:"ปัญหาสินค้าหรือบริการทั่วไป",steps:["เก็บใบเสร็จ สัญญา และภาพความเสียหาย","แจ้งผู้ประกอบการพร้อมหลักฐาน","หากไม่ได้รับการแก้ไข ตรวจสอบช่องทางร้องทุกข์ผู้บริโภค"],primary:"ocpb",alternates:[],wizard:"service"},
+  post:{title:"พัสดุไปรษณีย์ไทย/EMS เสียหาย",steps:["ถ่ายภาพกล่อง ใบปะหน้า และสินค้าที่เสียหาย เก็บบรรจุภัณฑ์","แจ้งเหตุและสอบถามเงื่อนไขชดเชยกับไปรษณีย์ไทยโดยเร็ว","เก็บเลขเคส ผลตอบกลับ และพิจารณาร้องทุกข์เพิ่มเติมหากแก้ไม่ได้"],primary:"thpost",alternates:["ocpb"],wizard:"parcel"},
+  otherParcel:{title:"พัสดุขนส่งเอกชนเสียหาย",steps:["เก็บรูปกล่อง เลขพัสดุ และหลักฐานมูลค่า","แจ้งบริษัทขนส่งผ่านช่องทางทางการและขอเลขเคส","หากยังแก้ไม่ได้ พิจารณาปรึกษาช่องทางร้องทุกข์ผู้บริโภคตามประเภทข้อพิพาท"],primary:"ocpb",alternates:[],wizard:"parcel",startFirst:true},
+  telecom:{title:"ปัญหาโทรศัพท์หรืออินเทอร์เน็ต",steps:["รวบรวมหมายเลขบริการ ใบแจ้งค่าบริการ และหลักฐานปัญหา","แจ้งผู้ให้บริการและเก็บเลขรับเรื่อง","ตรวจสอบช่องทางคุ้มครองผู้ใช้บริการโทรคมนาคมของ กสทช."],primary:"nbtc",alternates:[],wizard:null},
+  insurance:{title:"ข้อพิพาทเกี่ยวกับประกันภัย",steps:["เตรียมกรมธรรม์ ใบเคลมและเหตุผลปฏิเสธ (ถ้ามี)","ขอคำชี้แจงจากบริษัทประกันและเก็บหลักฐาน","ตรวจสอบช่องทางร้องเรียน คปภ. และเงื่อนไขเฉพาะกรณี"],primary:"oic",alternates:[],wizard:null},
+  finance:{title:"ปัญหาธนาคารหรือการเงิน",steps:["เก็บรายละเอียดรายการที่มีปัญหาและหลักฐานที่เกี่ยวข้อง","ร้องเรียนต่อผู้ให้บริการทางการเงินก่อน หากเหมาะสม","ตรวจสอบว่าข้อพิพาทอยู่ในขอบเขตศูนย์ช่วยเหลือของ ธปท. หรือไม่"],primary:"bot",alternates:[],wizard:null},
+  government:{title:"ปัญหากับบริการหรือหน่วยงานของรัฐ",steps:["ระบุหน่วยงาน วันที่เกิดเหตุ และหลักฐานที่มี","สอบถามช่องทางแก้ปัญหาของหน่วยงานต้นเรื่อง","ตรวจสอบการร้องทุกข์ผ่านศูนย์ 1111 หรือช่องทางเฉพาะเรื่อง"],primary:"gov1111",alternates:[],wizard:null},
+  fraud:{title:"สงสัยถูกมิจฉาชีพหลอกโอนเงิน",urgent:true,steps:["ติดต่อธนาคารที่เกี่ยวข้องทันทีเพื่อขอความช่วยเหลือเรื่องธุรกรรม","โทรศูนย์ AOC 1441 โดยไม่ต้องรอกรอกแบบฟอร์ม","เก็บหลักฐานการโอนเงิน การสนทนา และดำเนินการแจ้งความตามช่องทางตำรวจ"],primary:"police",alternates:[],wizard:null},
+  labor:{title:"นายจ้างค้างค่าจ้าง/ข้อพิพาทแรงงาน",steps:["เก็บสัญญาจ้าง สลิปเงินเดือน หลักฐานการทำงาน และข้อความทวงถาม","ตรวจสอบประเภทการจ้างและสิทธิที่เกี่ยวข้องก่อนคำนวณยอด","ติดต่อกรมสวัสดิการและคุ้มครองแรงงานหรือสำนักงานสวัสดิการและคุ้มครองแรงงานจังหวัดเพื่อสอบถามช่องทางยื่นคำร้อง"],primary:null,alternates:[],wizard:null},
+  housing:{title:"เงินมัดจำหอพัก/ปัญหาสัญญาเช่า",steps:["เก็บสัญญา หลักฐานจ่ายเงิน ภาพสภาพห้องก่อน-หลัง","ขอเหตุผลการหักเงินและแจ้งคำขอคืนเงินเป็นลายลักษณ์อักษร","ตรวจสอบกฎหมายที่ใช้กับผู้ให้เช่าแต่ละประเภท และพิจารณาขอคำแนะนำจาก สคบ. เมื่อเกี่ยวข้อง"],primary:"ocpb",alternates:[],wizard:null},
+  other:{title:"ยังไม่แน่ใจว่าควรไปที่ไหน",steps:["เขียนสรุปเหตุการณ์ให้ชัดว่าเกิดกับใคร ที่ไหน เมื่อใด","เก็บเอกสารและหลักฐานที่เกี่ยวข้อง","ลองสอบถามศูนย์ 1111 สำหรับเรื่องร้องทุกข์ภาครัฐ หรือหาหน่วยงานเฉพาะทางก่อนยื่น"],primary:null,alternates:[],wizard:null}
+};
+function renderAgencyFinder(){
+  const issue=document.getElementById("agencyIssue").value;
+  const box=document.getElementById("agencyFinderResult");
+  const item=FINDER_PATHS[issue];
+  if(!item){box.innerHTML='<p class="tool-empty">เลือกปัญหาด้านบน เพื่อดูทางเริ่มต้นที่เหมาะสม</p>';return}
+  trackEvent("agency_result_view");
+  let html=`<h3>${escapeHTML(item.title)}</h3>`;
+  if(item.urgent)html+='<div class="tool-urgent"><strong>⚠️ กรณีเร่งด่วน</strong><br>ติดต่อธนาคารและโทร <a href="tel:1441">AOC 1441</a> ทันที อย่ารอสร้างคำร้องบนเว็บไซต์นี้</div>';
+  html+='<ol class="tool-steps">'+item.steps.map(t=>`<li>${escapeHTML(t)}</li>`).join('')+'</ol>';
+  if(item.primary){
+    const a=AGENCIES[item.primary];
+    const label=item.startFirst?"ช่องทางพิจารณาหากติดต่อบริษัทแล้วไม่ได้รับการแก้ไข":"เว็บไซต์ทางการที่อาจเกี่ยวข้อง";
+    html+=`<div class="finder-agency"><span>${label}</span><strong>${escapeHTML(a.name)}</strong><p>${escapeHTML(a.reason)}</p><button type="button" class="tool-primary-btn" onclick="openAgency('${item.primary}')">เปิดเว็บไซต์ทางการ →</button></div>`;
+  }
+  item.alternates.forEach(key=>{
+    const a=AGENCIES[key];
+    html+=`<div class="finder-secondary"><strong>ทางเลือกเพิ่มเติม: ${escapeHTML(a.short)}</strong><button type="button" class="secondary-action-button" onclick="openAgency('${key}')">ดูช่องทาง →</button></div>`;
+  });
+  if(issue==="labor")html+='<p class="tool-help">ระบบคัดกรองช่องทางแรงงานแบบละเอียดกำลังพัฒนา จึงยังไม่ใส่ลิงก์ยื่นคำร้องโดยอัตโนมัติ</p>';
+  if(issue==="other")html+='<p class="tool-help">เราไม่เลือกหน่วยงานให้โดยไม่มีข้อมูลเพียงพอ เพราะอาจทำให้ยื่นผิดช่องทางได้</p>';
+  if(item.wizard)html+=`<button type="button" class="tool-secondary-btn" onclick="startFromProblem('${item.wizard}')">เตรียมข้อความร้องเรียนสำหรับเรื่องนี้ →</button>`;
+  box.innerHTML=html;
+}
+/* Official follow-up destinations: only verified tracking entry points are labeled
+   “ตรวจสถานะ”. Other agency pages are for contacting the organization, not a
+   direct status feed. We never attach a case number to a URL. */
+const FOLLOWUP_CHANNELS={
+  ocpb:{title:"สคบ. — ตรวจสถานะเรื่องร้องทุกข์",label:"เปิดหน้าตรวจสถานะ สคบ. ↗",url:"https://complaint.ocpb.go.th/tracking",type:"status",help:"นำเลขรับแจ้งหรือรหัสอ้างอิงที่ สคบ. ออกให้ ไปกรอกบนเว็บไซต์ สคบ. หากระบบขอเข้าสู่ระบบ ให้ดำเนินการในเว็บไซต์ทางการเท่านั้น"},
+  etda:{title:"1212 ETDA — ติดตามเรื่องร้องเรียน",label:"เปิดหน้า 1212 ETDA เพื่อติดตาม ↗",url:"https://1212.etda.or.th/",type:"status",help:"หน้าเว็บไซต์ 1212 ETDA มีช่องติดตามเรื่องร้องเรียนด้วยรหัสเรื่องร้องเรียน ให้กรอกข้อมูลในเว็บไซต์นั้นด้วยตัวเอง"},
+  oic:{title:"คปภ. — ระบบ PPMS",label:"เปิดระบบ คปภ. (PPMS) ↗",url:"https://complaintportal.oic.or.th/",type:"status",help:"ระบบ PPMS มีเมนูติดตามสถานะ อาจต้องเข้าสู่ระบบหรือยืนยันตัวตนตามขั้นตอนที่กำหนด"},
+  gov1111:{title:"ศูนย์ 1111 — ติดตามเรื่องร้องเรียน",label:"เปิดเว็บไซต์ 1111 เพื่อติดตาม ↗",url:"https://www.1111.go.th/",type:"status",help:"เลือกเมนูติดตามเรื่องร้องเรียนบนเว็บไซต์ 1111 และใช้ข้อมูลอ้างอิงตามที่ศูนย์แจ้งไว้"},
+  thpost:{title:"ไปรษณีย์ไทย — สอบถามความคืบหน้าเรื่องร้องเรียน",label:"เปิดช่องทางรับเรื่องไปรษณีย์ไทย ↗",url:"https://www.thailandpost.co.th/un/form/complaints/?form_id=3",type:"contact",help:"ติดตามคำร้องกับ THP Contact Center 1545 หรือที่ทำการไปรษณีย์ โดยแจ้งเลขเคสที่เคยได้รับ ปุ่มติดตามพัสดุด้านล่างใช้ดูสถานะการขนส่ง ไม่ใช่ผลพิจารณาเรื่องร้องเรียน",parcel:true},
+  nbtc:{title:"กสทช. — ติดต่อสอบถามเรื่องร้องเรียน",label:"เปิดหน้าคุ้มครองผู้บริโภค กสทช. ↗",url:"https://tcp.nbtc.go.th/th/Consumer-Protection.aspx",type:"contact",help:"ติดต่อสำนักงาน กสทช. ที่สายด่วน 1200 พร้อมเลขรับเรื่องเพื่อสอบถามความคืบหน้า ลิงก์นี้เป็นหน้าข้อมูล/ติดต่อ ไม่ใช่ระบบตรวจสถานะอัตโนมัติ"},
+  bot:{title:"ธปท. — ช่องทางช่วยเหลือและร้องเรียน",label:"เปิดช่องทางช่วยเหลือ ธปท. ↗",url:"https://services.bot.or.th/",type:"contact",help:"ติดต่อช่องทางทางการของ ธปท. พร้อมรายละเอียดและเลขอ้างอิง (หากมี) เพื่อสอบถามความคืบหน้า ลิงก์นี้ไม่ใช่ระบบอ่านสถานะของเคสจากเว็บเรา"}
+};
+function followupAgencyName(){
+  const value=document.getElementById('followAgency').value;
+  if(value==='other')return document.getElementById('followAgencyOther').value.trim()||'หน่วยงานที่รับเรื่อง';
+  return AGENCIES[value]?.name||'หน่วยงานที่เกี่ยวข้อง';
+}
+function updateFollowupAgencyLink(){
+  const key=document.getElementById('followAgency').value;
+  const channel=FOLLOWUP_CHANNELS[key];
+  const other=document.getElementById('followAgencyOtherWrap');
+  other.classList.toggle('hidden',key!=='other');
+  const box=document.getElementById('followupOfficialLinks');
+  box.classList.toggle('hidden',!key);
+  const title=document.getElementById('followupChannelTitle');
+  const help=document.getElementById('followupChannelHelp');
+  const link=document.getElementById('followupChannelLink');
+  const parcel=document.getElementById('followupParcelLink');
+  const resultLink=document.getElementById('followAgencyLink');
+  if(!key){
+    title.textContent='';help.textContent='';link.classList.add('hidden');
+    parcel.classList.add('hidden');resultLink.classList.add('hidden');return;
+  }
+  if(!channel){
+    title.textContent='ตรวจสอบช่องทางของหน่วยงานที่รับเรื่อง';
+    help.textContent='โปรดตรวจสอบเว็บไซต์หรือช่องทางติดต่อจากใบรับเรื่องหรือข้อความยืนยันที่ได้รับ และสอบถามโดยตรงกับหน่วยงานนั้น';
+    link.classList.add('hidden');parcel.classList.add('hidden');resultLink.classList.add('hidden');
+  }else{
+    title.textContent=channel.title;
+    help.textContent=channel.help;
+    link.href=channel.url;
+    link.textContent=channel.label;
+    link.classList.remove('hidden');
+    parcel.classList.toggle('hidden',!channel.parcel);
+    resultLink.textContent=channel.type==='status'?`ตรวจสถานะผ่านเว็บไซต์ ${AGENCIES[key].short} →`:`ติดต่อ ${AGENCIES[key].short} ผ่านเว็บไซต์ทางการ →`;
+    resultLink.classList.remove('hidden');
+  }
+  // Prevent a stale draft referring to a previously selected agency.
+  const result=document.getElementById('followupResult');
+  if(!result.classList.contains('hidden')){
+    document.getElementById('followupText').textContent=createFollowupText();
+  }
+}
+function createFollowupText(){
+  const selected=document.getElementById('followAgency').value;
+  const agency=followupAgencyName();
+  const date=document.getElementById('followDate').value;
+  const ref=document.getElementById('followCase').value.trim();
+  const notes=document.getElementById('followNotes').value.trim();
+  let lines=[
+    'เรื่อง ขอสอบถามความคืบหน้าเรื่องร้องเรียนที่เคยยื่นไว้',
+    '',
+    `เรียน ${agency}`,
+    '',
+    'ข้าพเจ้าได้ยื่นเรื่องร้องเรียนไว้กับหน่วยงานของท่าน'
+  ];
+  if(date)lines.push(`เมื่อวันที่ ${formatThaiDate(date)}`);
+  if(ref)lines.push(`เลขรับเรื่อง / เลขอ้างอิง: ${ref}`);
+  if(notes)lines.push('',`รายละเอียดเพิ่มเติม: ${notes}`);
+  lines.push('', 'จึงขอความอนุเคราะห์แจ้งสถานะปัจจุบัน ขั้นตอนถัดไป และเอกสารเพิ่มเติมที่จำเป็น (หากมี) เพื่อให้ข้าพเจ้าดำเนินการได้ถูกต้อง', '', 'ขอขอบพระคุณสำหรับความช่วยเหลือ', '[ชื่อและช่องทางติดต่อของผู้ร้อง]');
+  return lines.join('\n');
+}
+function generateFollowup(){
+  if(!document.getElementById('followAgency').value){showToast('กรุณาเลือกหน่วยงานที่เคยยื่นเรื่อง');return}
+  trackEvent('followup_generate');
+  document.getElementById('followupText').textContent=createFollowupText();
+  document.getElementById('followupResult').classList.remove('hidden');
+  updateFollowupAgencyLink();
+  document.getElementById('followupResult').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function copyFollowup(){
+  const text=document.getElementById('followupText').textContent;
+  if(!text)return;
+  trackEvent('followup_copy');
+  copyText(text,'คัดลอกข้อความติดตามเรื่องแล้ว');
+}
+function openFollowupAgency(){
+  const key=document.getElementById('followAgency').value;
+  const channel=FOLLOWUP_CHANNELS[key];
+  if(!channel)return;
+  trackEvent('followup_official_link_open');
+  window.open(channel.url,'_blank','noopener,noreferrer');
+}
+
 async function initializeApp(){
   initializeAnalytics();
   createUploadFields();
   enableAutoSave();
   updateContinueButton();
+  updateFollowupAgencyLink();
   syncCategoryButtons();
   updateContactFields();
   updateParcelFields();
